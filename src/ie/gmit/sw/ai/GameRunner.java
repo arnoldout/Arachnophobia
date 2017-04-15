@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import ie.gmit.sw.ai.sprites.SpriteType;
 import ie.gmit.sw.ai.traversal.MazeNodeConverter;
 import ie.gmit.sw.ai.traversal.Node;
 public class GameRunner implements KeyListener{
@@ -93,20 +94,20 @@ public class GameRunner implements KeyListener{
 		//sprite will be referenced by its index in the array, e.g. a 3 implies a Bomb...
 		//Ideally, the array should dynamically created from the images... 
 		Sprite[] sprites = new Sprite[IMAGE_COUNT];
-		sprites[0] = new Sprite("Hedge", "resources/hedge.png");
-		sprites[1] = new Sprite("Sword", "resources/sword.png");
-		sprites[2] = new Sprite("Help", "resources/help.png");
-		sprites[3] = new Sprite("Bomb", "resources/bomb.png");
-		sprites[4] = new Sprite("Hydrogen Bomb", "resources/h_bomb.png");
-		sprites[5] = new Sprite("Spartan Warrior", "resources/spartan_1.png", "resources/spartan_2.png");
-		sprites[6] = new Sprite("Black Spider", "resources/black_spider_1.png", "resources/black_spider_2.png");
-		sprites[7] = new Sprite("Blue Spider", "resources/blue_spider_1.png", "resources/blue_spider_2.png");
-		sprites[8] = new Sprite("Brown Spider", "resources/brown_spider_1.png", "resources/brown_spider_2.png");
-		sprites[9] = new Sprite("Green Spider", "resources/green_spider_1.png", "resources/green_spider_2.png");
-		sprites[10] = new Sprite("Grey Spider", "resources/grey_spider_1.png", "resources/grey_spider_2.png");
-		sprites[11] = new Sprite("Orange Spider", "resources/orange_spider_1.png", "resources/orange_spider_2.png");
-		sprites[12] = new Sprite("Red Spider", "resources/red_spider_1.png", "resources/red_spider_2.png");
-		sprites[13] = new Sprite("Yellow Spider", "resources/yellow_spider_1.png", "resources/yellow_spider_2.png");
+		sprites[1] = SpriteType.sword.getNewInstance();
+		sprites[0] = SpriteType.hedge.getNewInstance();
+		sprites[2] = SpriteType.help.getNewInstance();
+		sprites[3] = SpriteType.regularBomb.getNewInstance();
+		sprites[4] = SpriteType.hydrogenBomb.getNewInstance();
+		sprites[5] = SpriteType.spartan.getNewInstance();
+		sprites[6] = SpriteType.spider_black.getNewInstance();
+		sprites[7] = SpriteType.spider_blue.getNewInstance();
+		sprites[8] = SpriteType.spider_brown.getNewInstance();
+		sprites[9] = SpriteType.spider_green.getNewInstance();
+		sprites[10] = SpriteType.spider_grey.getNewInstance();
+		sprites[11] = SpriteType.spider_orange.getNewInstance();
+		sprites[12] = SpriteType.spider_red.getNewInstance();
+		sprites[13] = SpriteType.spider_yellow.getNewInstance();
 		return sprites;
 	}
 	
