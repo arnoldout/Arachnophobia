@@ -5,7 +5,7 @@ import java.awt.event.*;
 import javax.swing.*;
 public class GameView extends JPanel implements ActionListener{
 	private static final long serialVersionUID = 1L;
-	public static final int DEFAULT_VIEW_SIZE = 800;	
+	public static final int DEFAULT_VIEW_SIZE = 1120;	
 	private int cellspan = 5;	
 	private int cellpadding = 2;
 	private Maze maze;
@@ -51,7 +51,7 @@ public class GameView extends JPanel implements ActionListener{
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
               
-        cellspan = zoomOut ? maze.size() : 5;         
+        cellspan = zoomOut ? maze.size() : 7;         
         final int size = DEFAULT_VIEW_SIZE/cellspan;
         g2.drawRect(0, 0, GameView.DEFAULT_VIEW_SIZE, GameView.DEFAULT_VIEW_SIZE);
         
