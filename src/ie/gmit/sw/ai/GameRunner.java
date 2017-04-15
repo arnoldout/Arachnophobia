@@ -8,13 +8,14 @@ public class GameRunner implements KeyListener{
 	private static final int IMAGE_COUNT = 14;
 	private GameView view;
 	private Maze model;
+	private GameController controller;
 	private int currentRow;
 	private int currentCol;
 	
 	public GameRunner() throws Exception{
 		model = new Maze(MAZE_DIMENSION);
     	view = new GameView(model);
-    	
+    	controller = new GameController(model);
     	Sprite[] sprites = getSprites();
     	view.setSprites(sprites);
     	
