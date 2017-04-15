@@ -49,6 +49,7 @@ public class GameController {
 			if (model.get(row, col) == replace) {
 				model.set(row, col, feature);
 				counter++;
+				//this creates the spider and gives it to the scheduler, every 2 seconds it calls the spiders run method.
 				god.scheduleAtFixedRate(new TestRunnable(model, feature, row, col), 0, 2, TimeUnit.SECONDS);
 			}
 		}
