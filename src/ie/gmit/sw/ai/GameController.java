@@ -42,7 +42,6 @@ public class GameController {
 	//the spiders will be updating their position themselves, this is just for init purposes
 	private void addFeature(SpriteType s, char feature, char replace) {
 		int counter = 0;
-		
 		while (counter < feature) {
 
 			int row = (int) (model.getMaze().length * Math.random());

@@ -54,4 +54,12 @@ public abstract class Moveable implements Runnable{
 	public void setAlive(boolean isAlive) {
 		this.isAlive = isAlive;
 	}
+	public int getHealth() {
+		return health;
+	}
+
+	public void setHealth(int health) {
+		this.health = health;
+	}
+
 }
