@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import ie.gmit.sw.ai.sprites.SpriteType;
 import ie.gmit.sw.ai.traversal.MazeNodeConverter;
 import ie.gmit.sw.ai.traversal.Node;
 public class GameRunner implements KeyListener{
