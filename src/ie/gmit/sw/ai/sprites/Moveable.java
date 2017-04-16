@@ -21,23 +21,20 @@ public abstract class Moveable implements Runnable{
 		this.spriteChar = spriteChar;
 		this.setAlive(isAlive);
 	}
-	/*
-	 * Its late, just slapped these together, 
-	 * Do some testing to check directions are correct
-	 */
-	public void moveRight()
+	
+	public void moveDown()
 	{
 		doMove(x+1, y);
 	}
-	public void moveLeft()
+	public void moveUp()
 	{
 		doMove(x-1, y);
 	}
-	public void moveDown()
+	public void moveLeft()
 	{
 		doMove(x, y-1);
 	}
-	public void moveUp()
+	public void moveRight()
 	{
 		doMove(x, y+1);
 	}
