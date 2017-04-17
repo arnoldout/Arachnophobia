@@ -85,24 +85,20 @@ public class Spartan extends Moveable {
 		}
 		int asdf = Utils.getMaxIndex(actions);
 		switch (asdf) {
-		case 0:// sword
+		case 0:
 			System.out.println("going for the sword");
-//			simpleGoTo(swrdNearby);
 			break;
 		case 1:
 			System.out.println("going for the help");
-//			simpleGoTo(hlpNearby);
 			break;
 		case 2:
 			System.out.println("going for the bomb");
-//			simpleGoTo(bmbNearby);
 			break;
 		case 3:
 			System.out.println("going for the hbomb");
-//			simpleGoTo(hbmbNearby);
 			break;
 		case 4:
-//			simpleGoTo(getWanderPos());
+			System.out.println("wandering");
 			break;
 		default:
 			break;

@@ -10,7 +10,6 @@ public class BlackSpider extends Spider {
 
 	@Override
 	public void run() {
-		moveUp();
 	}
 
 }

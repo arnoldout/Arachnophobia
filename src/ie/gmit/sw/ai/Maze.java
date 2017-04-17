@@ -49,7 +49,6 @@ public class Maze {
 				counter++;
 			}
 		}
-		System.out.println(counter + " " + feature);
 	}
 	
 	private void buildMaze(){ 
@@ -74,13 +73,13 @@ public class Maze {
 	}
 	
 	public void set(int row, int col, char c){
-		System.out.println(c +"going to "+ col + " " + row);
 		this.maze[row][col] = c;
 	}
 	
 	public int size(){
 		return this.maze.length;
 	}
+	
 	
 	public String toString(){
 		StringBuffer sb = new StringBuffer();

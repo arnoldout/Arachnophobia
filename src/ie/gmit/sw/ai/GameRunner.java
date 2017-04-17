@@ -50,7 +50,7 @@ public class GameRunner implements KeyListener{
     	currentRow = (int) (MAZE_DIMENSION * Math.random());
     	currentCol = (int) (MAZE_DIMENSION * Math.random());
     	controller.placePlayer(currentCol, currentRow);
-    	System.out.println("player @"+ currentCol +" "+ currentRow);
+//    	System.out.println("player @"+ currentCol +" "+ currentRow);
     	//model.set(currentRow, currentCol, '\u0035');
     	updateView(); 		
 	}
@@ -75,7 +75,6 @@ public class GameRunner implements KeyListener{
         }else{
         	return;
         }
-        System.out.println(currentCol + " " +currentRow);
         updateView();       
     }
     public void keyReleased(KeyEvent e) {} //Ignore
