@@ -12,7 +12,7 @@ public class GameRunner implements KeyListener{
 	private static final int IMAGE_COUNT = 14;
 	private GameView view;
 	private Maze model;
-	private Node[][] traversableMaze;
+
 	@SuppressWarnings("unused")
 	private GameController controller;
 	private int currentRow;
@@ -20,9 +20,7 @@ public class GameRunner implements KeyListener{
 	
 	public GameRunner() throws Exception{
 		model = new Maze(MAZE_DIMENSION);
-		//not sure if this works just yet, but it's there. Heuristics should still be euclidean distance, since the area is so wide open
-		//this actually still might be viable for later.
-		traversableMaze = MazeNodeConverter.makeTraversable(model);
+
     	view = new GameView(model);
     	controller = new GameController(model);
     	Sprite[] sprites = getSprites();

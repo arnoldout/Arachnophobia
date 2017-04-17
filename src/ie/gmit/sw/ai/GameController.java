@@ -6,10 +6,13 @@ import java.util.concurrent.TimeUnit;
 
 import ie.gmit.sw.ai.sprites.Moveable;
 import ie.gmit.sw.ai.sprites.SpriteType;
+import ie.gmit.sw.ai.traversal.MazeNodeConverter;
+import ie.gmit.sw.ai.traversal.Node;
 
 //maybe rename this... because reasons....
 public class GameController {
 	private Maze model;
+	private static Node[][] traversableMaze;
 	private ScheduledExecutorService god;//I hope blasphemy isn't still illegal here...
 	
 	@SuppressWarnings("unused")
@@ -19,6 +22,9 @@ public class GameController {
 
 	public GameController(Maze model) {
 		this.model = model;
+		//not sure if this works just yet, but it's there. Heuristics should still be euclidean distance, since the area is so wide open
+		//this actually still might be viable for later.
+		traversableMaze = MazeNodeConverter.makeTraversable(model);
 		god= new ScheduledThreadPoolExecutor(1000);
 		// need to init all the spiders
 		// which need to be runnable
@@ -38,7 +44,11 @@ public class GameController {
 		addFeature(SpriteType.spider_Red,'\u003C', '0'); // <(int=60) is a Red Spider, 0 is a hedge
 //		addFeature('\u003D', '0'); // =(int=61) is a Yellow Spider, 0 is a hedge
 	}
-
+	
+	public static Node[][] getNodes(){
+		return traversableMaze;
+	}
+	
 	//just plops the character representation of whatever the 'thing' is at it's position.
 	//the spiders will be updating their position themselves, this is just for init purposes
 	private void addFeature(SpriteType s, char feature, char replace) {
