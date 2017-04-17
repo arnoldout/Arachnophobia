@@ -22,6 +22,16 @@ public abstract class Moveable implements Runnable{
 		this.setAlive(isAlive);
 	}
 	
+	public char getSquare(int a, int b) {
+		return model.get(a, b);
+	}
+	public boolean isValidMove(int row, int col){
+		if (row <= model.size() - 1 && col <= model.size() - 1 && model.get(row, col) == ' '){
+			return true;
+		}else{
+			return false; //Can't move
+		}
+	}
 	public void moveDown()
 	{
 		doMove(x+1, y);
@@ -48,6 +58,22 @@ public abstract class Moveable implements Runnable{
 			model.set(row, col, spriteChar);
 		}
 	}
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
 	public boolean isAlive() {
 		return isAlive;
 	}
