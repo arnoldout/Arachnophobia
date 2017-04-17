@@ -23,33 +23,56 @@ public abstract class Moveable implements Runnable {
 		this.model.set(y, x, spriteChar);
 	}
 
-	/*
-	 * Its late, just slapped these together, Do some testing to check
-	 * directions are correct
-	 */
-	public void moveRight() {
-		doMove(x + 1, y);
+	public char getSquare(int a, int b) {
+		return model.get(a, b);
 	}
-
-	public void moveLeft() {
-		doMove(x - 1, y);
+	public boolean isValidMove(int row, int col){
+		if (row <= model.size() - 1 && col <= model.size() - 1 && model.get(row, col) == ' '){
+			return true;
+		}else{
+			return false; //Can't move
+		}
 	}
-
-	public void moveDown() {
-		doMove(x, y - 1);
+	public void moveDown()
+	{
+		doMove(x+1, y);
 	}
-
-	public void moveUp() {
-		doMove(x, y + 1);
+	public void moveUp()
+	{
+		doMove(x-1, y);
 	}
-
-	public void doMove(int row, int col) {
-		if (row <= model.size() - 1 && row > 0 && col <= model.size() - 1 && col > 0 && model.get(row, col) == ' ') {
-			model.set(y, x, blank);
-			x = col;
-			y = row;
+	public void moveLeft()
+	{
+		doMove(x, y-1);
+	}
+	public void moveRight()
+	{
+		doMove(x, y+1);
+	}
+	public void doMove(int row, int col){
+		if (row <= model.size() - 1 && row > 0 &&
+				col <= model.size() - 1 && col > 0 &&
+				model.get(row, col) == ' '){
+			model.set(x, y, blank);
+			x=row;
+			y=col;
 			model.set(row, col, spriteChar);
 		}
+	}
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
 	}
 
 	public boolean isAlive() {
@@ -59,6 +82,13 @@ public abstract class Moveable implements Runnable {
 	public void setAlive(boolean isAlive) {
 		this.isAlive = isAlive;
 	}
+	public int getHealth() {
+		return health;
+	}
+
+	public void setHealth(int health) {
+		this.health = health;
+	}
 
 	public char[][] getMaze() {
 		return model.getMaze();
@@ -66,14 +96,6 @@ public abstract class Moveable implements Runnable {
 
 	public Maze getModel() {
 		return model;
-	}
-
-	public int getX() {
-		return x;
-	}
-
-	public int getY() {
-		return y;
 	}
 
 }
