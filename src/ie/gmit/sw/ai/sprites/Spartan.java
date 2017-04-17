@@ -173,9 +173,9 @@ public class Spartan extends Moveable {
 		}
 	}
 
-	private void isValidMove(int y, int x) {
+	private void doValidMove(int y, int x) {
 		Maze model = this.getModel();
-		if (y <= model.size() - 1 && x <= model.size() - 1 && model.get(y, x) == ' ') {
+		if (isValidMove(y, x)) {
 			this.doMove(y, x);
 		}
 	}
