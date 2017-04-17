@@ -30,13 +30,14 @@ public class GameController {
 		//and adds that many of that to the map at random spots
 		//we can use this stuff, just need to make sure we are creating the runnables as well.
 		addFeature(SpriteType.spider_black,'\u0036', '0'); // 6(int=54) is a Black Spider, 0 is a hedge
-		addFeature(SpriteType.spider_blue,'\u0037', '0'); // 7(int=55) is a Blue Spider, 0 is a hedge
-		addFeature(SpriteType.spider_brown,'\u0038', '0'); // 8(int=56) is a Brown Spider, 0 is a hedge
-		addFeature(SpriteType.spider_green,'\u0039', '0'); // 9(int=57) is a Green Spider, 0 is a hedge
-		addFeature(SpriteType.spider_grey,'\u003A', '0'); // :(int=58) is a Grey Spider, 0 is a hedge
-		addFeature(SpriteType.spider_orange,'\u003B', '0'); // ;(int=59) is a Orange Spider, 0 is a hedge
-		addFeature(SpriteType.spider_red,'\u003C', '0'); // <(int=60) is a Red Spider, 0 is a hedge
-		addFeature(SpriteType.spider_yellow,'\u003D', '0'); // =(int=61) is a Yellow Spider, 0 is a hedge
+//		addFeature(SpriteType.spider_blue,'\u0037', '0'); // 7(int=55) is a Blue Spider, 0 is a hedge
+//		addFeature(SpriteType.spider_brown,'\u0038', '0'); // 8(int=56) is a Brown Spider, 0 is a hedge
+//		addFeature(SpriteType.spider_green,'\u0039', '0'); // 9(int=57) is a Green Spider, 0 is a hedge
+//		addFeature(SpriteType.spider_grey,'\u003A', '0'); // :(int=58) is a Grey Spider, 0 is a hedge
+//		addFeature(SpriteType.spider_orange,'\u003B', '0'); // ;(int=59) is a Orange Spider, 0 is a hedge
+//		addFeature(SpriteType.spider_red,'\u003C', '0'); // <(int=60) is a Red Spider, 0 is a hedge
+//		addFeature(SpriteType.spider_yellow,'\u003D', '0'); // =(int=61) is a Yellow Spider, 0 is a hedge
+		
 	}
 
 	//just plops the character representation of whatever the 'thing' is at it's position.
@@ -54,7 +55,7 @@ public class GameController {
 				counter++;
 				
 				//this creates the spider and gives it to the scheduler, every 2 seconds it calls the spiders run method.
-				god.scheduleAtFixedRate(s.getNewInstance(model, row, col, true), 0, 1, TimeUnit.SECONDS);
+				god.scheduleAtFixedRate(s.getNewInstance(model, row, col, true), 0, 2, TimeUnit.SECONDS);
 			}
 		}
 	}
