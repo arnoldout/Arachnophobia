@@ -31,6 +31,6 @@ public class NeuralNetworkService {
 		//nearest leader. otherwise spiders would clump up and not move until the player comes by, which could be an idea too
 		
 		
-		//testeroo = new NeuralNetwork(aFactory.getActivator(ActivationFunction.Sigmoid), , num_hidden_nodes, num_output_nodes);	
+	//	testeroo = new NeuralNetwork(function, num_input_nodes, num_hidden_nodes, num_output_nodes)
 	}
 }

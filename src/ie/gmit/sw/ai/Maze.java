@@ -49,7 +49,6 @@ public class Maze {
 				counter++;
 			}
 		}
-		System.out.println(counter + " " + feature);
 	}
 	
 	private void buildMaze(){ 
@@ -80,6 +79,7 @@ public class Maze {
 	public int size(){
 		return this.maze.length;
 	}
+	
 	
 	public String toString(){
 		StringBuffer sb = new StringBuffer();

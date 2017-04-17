@@ -4,12 +4,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import ie.gmit.sw.ai.sprites.Moveable;
 import ie.gmit.sw.ai.sprites.SpriteType;
 
 //maybe rename this... because reasons....
 public class GameController {
-	Maze model;
-	ScheduledExecutorService god;//I hope blasphemy isn't still illegal here...
+	private Maze model;
+	private ScheduledExecutorService god;//I hope blasphemy isn't still illegal here...
 	
 	@SuppressWarnings("unused")
 	private GameController() {
@@ -44,6 +45,7 @@ public class GameController {
 		int counter = 0;
 		while (counter < feature) {
 
+
 			int row = (int) (model.getMaze().length * Math.random());
 			int col = (int) (model.getMaze()[0].length * Math.random());
 
@@ -55,5 +57,9 @@ public class GameController {
 				god.scheduleAtFixedRate(s.getNewInstance(model, row, col, true), 0, 1, TimeUnit.SECONDS);
 			}
 		}
+	}
+	public void placePlayer(int x, int y){
+		Moveable spartan = SpriteType.spartan.getNewInstance(model, x, y, true);
+		god.scheduleAtFixedRate(spartan, 0, 2, TimeUnit.SECONDS);
 	}
 }

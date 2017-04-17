@@ -2,7 +2,7 @@ package ie.gmit.sw.ai.sprites;
 
 import ie.gmit.sw.ai.Maze;
 
-public abstract class Moveable implements Runnable{
+public abstract class Moveable implements Runnable {
 	private final char blank = '\u0020';
 	private Maze model;
 	private char spriteChar;
@@ -10,9 +10,9 @@ public abstract class Moveable implements Runnable{
 	private int y;
 	private int health;
 	private boolean isAlive;
-	//private neruralController
-	//private fuzzyController
-	
+	// private neruralController
+	// private fuzzyController
+
 	public Moveable(Maze model, int x, int y, boolean isAlive, char spriteChar) {
 		super();
 		this.model = model;
@@ -20,8 +20,9 @@ public abstract class Moveable implements Runnable{
 		this.y = y;
 		this.spriteChar = spriteChar;
 		this.setAlive(isAlive);
+		this.model.set(y, x, spriteChar);
 	}
-	
+
 	public char getSquare(int a, int b) {
 		return model.get(a, b);
 	}
@@ -48,7 +49,7 @@ public abstract class Moveable implements Runnable{
 	{
 		doMove(x, y+1);
 	}
-	private void doMove(int row, int col){
+	public void doMove(int row, int col){
 		if (row <= model.size() - 1 && row > 0 &&
 				col <= model.size() - 1 && col > 0 &&
 				model.get(row, col) == ' '){
@@ -77,6 +78,7 @@ public abstract class Moveable implements Runnable{
 	public boolean isAlive() {
 		return isAlive;
 	}
+
 	public void setAlive(boolean isAlive) {
 		this.isAlive = isAlive;
 	}
@@ -86,6 +88,14 @@ public abstract class Moveable implements Runnable{
 
 	public void setHealth(int health) {
 		this.health = health;
+	}
+
+	public char[][] getMaze() {
+		return model.getMaze();
+	}
+
+	public Maze getModel() {
+		return model;
 	}
 
 }

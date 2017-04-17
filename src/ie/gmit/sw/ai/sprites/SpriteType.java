@@ -2,7 +2,7 @@ package ie.gmit.sw.ai.sprites;
 
 import ie.gmit.sw.ai.Maze;
 
-public enum SpriteType {	
+public enum SpriteType {
 	spider_black {
 		@Override
 		public Moveable getNewInstance(Maze m, int x, int y, boolean isAlive) {
@@ -56,7 +56,12 @@ public enum SpriteType {
 			// TODO Auto-generated method stub
 			return new YellowSpider(m, x, y, isAlive);
 		}
-		
+	},
+	spartan {
+		@Override
+		public Moveable getNewInstance(Maze m, int x, int y, boolean isAlive) {
+			return new Spartan(m, x, y, isAlive);
+		}
 	};
 	public abstract Moveable getNewInstance(Maze m, int x, int y, boolean isAlive);
 }
