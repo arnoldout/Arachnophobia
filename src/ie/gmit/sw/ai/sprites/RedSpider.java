@@ -10,7 +10,7 @@ public class RedSpider extends Spider{
 
 	@Override
 	public void run() {
-		moveLeft();
+		
 	}
 
 }

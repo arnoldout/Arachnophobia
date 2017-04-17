@@ -49,7 +49,9 @@ public class GameRunner implements KeyListener{
 	private void placePlayer(){   	
     	currentRow = (int) (MAZE_DIMENSION * Math.random());
     	currentCol = (int) (MAZE_DIMENSION * Math.random());
-    	model.set(currentRow, currentCol, '5'); //A Spartan warrior is at index 5
+    	controller.placePlayer(currentCol, currentRow);
+    	System.out.println("player @"+ currentCol +" "+ currentRow);
+    	//model.set(currentRow, currentCol, '\u0035');
     	updateView(); 		
 	}
 	
@@ -59,6 +61,7 @@ public class GameRunner implements KeyListener{
 	}
 
     public void keyPressed(KeyEvent e) {
+    	
         if (e.getKeyCode() == KeyEvent.VK_RIGHT && currentCol < MAZE_DIMENSION - 1) {
         	if (isValidMove(currentRow, currentCol + 1)) currentCol++;   		
         }else if (e.getKeyCode() == KeyEvent.VK_LEFT && currentCol > 0) {
@@ -72,7 +75,7 @@ public class GameRunner implements KeyListener{
         }else{
         	return;
         }
-        
+        System.out.println(currentCol + " " +currentRow);
         updateView();       
     }
     public void keyReleased(KeyEvent e) {} //Ignore
@@ -80,9 +83,7 @@ public class GameRunner implements KeyListener{
 
     
 	private boolean isValidMove(int row, int col){
-		if (row <= model.size() - 1 && col <= model.size() - 1 && model.get(row, col) == ' '){
-			model.set(currentRow, currentCol, '\u0020');
-			model.set(row, col, '5');
+		if (row <= model.size() - 1 && col <= model.size() - 1){
 			return true;
 		}else{
 			return false; //Can't move

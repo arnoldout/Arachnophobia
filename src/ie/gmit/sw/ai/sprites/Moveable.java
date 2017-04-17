@@ -20,6 +20,7 @@ public abstract class Moveable implements Runnable{
 		this.y = y;
 		this.spriteChar = spriteChar;
 		this.setAlive(isAlive);
+		this.model.set(y, x, spriteChar);
 	}
 	/*
 	 * Its late, just slapped these together, 
@@ -41,13 +42,13 @@ public abstract class Moveable implements Runnable{
 	{
 		doMove(x, y+1);
 	}
-	private void doMove(int row, int col){
+	public void doMove(int row, int col){
 		if (row <= model.size() - 1 && row > 0 &&
 				col <= model.size() - 1 && col > 0 &&
 				model.get(row, col) == ' '){
-			model.set(x, y, blank);
-			x=row;
-			y=col;
+			model.set(y, x, blank);
+			x=col;
+			y=row;
 			model.set(row, col, spriteChar);
 		}
 	}
@@ -57,4 +58,17 @@ public abstract class Moveable implements Runnable{
 	public void setAlive(boolean isAlive) {
 		this.isAlive = isAlive;
 	}
+	public char[][] getMaze(){
+		return model.getMaze();
+	}
+	public Maze getModel(){
+		return model;
+	}
+	public int getX() {
+		return x;
+	}
+	public int getY() {
+		return y;
+	}
+	
 }

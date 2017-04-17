@@ -74,6 +74,7 @@ public class Maze {
 	}
 	
 	public void set(int row, int col, char c){
+		System.out.println(c +"going to "+ col + " " + row);
 		this.maze[row][col] = c;
 	}
 	
