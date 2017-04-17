@@ -1,17 +1,31 @@
 package ie.gmit.sw.ai.sprites;
 
-import java.awt.event.KeyEvent;
+import java.util.Deque;
+import java.util.Queue;
 
+import ie.gmit.sw.ai.GameController;
 import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.nn.BackpropagationTrainer;
 import ie.gmit.sw.ai.nn.NeuralNetwork;
 import ie.gmit.sw.ai.nn.Trainator;
 import ie.gmit.sw.ai.nn.Utils;
 import ie.gmit.sw.ai.nn.activator.Activator.ActivationFunction;
-import ie.gmit.sw.ai.nn.activator.ActivatorFactory;
+import ie.gmit.sw.ai.traversal.BestFirstTraversator;
+import ie.gmit.sw.ai.traversal.Node;
+import ie.gmit.sw.ai.traversal.Traversator;
 
 public class Spartan extends Moveable {
+	// move this guy out of here, maybe. it's okay to leave one in the spartan
+	// maybe, theres just one of him
 	private NeuralNetwork testeroo;
+	// *********************************************************************
+	// If reworking algorithms works, make this a traversator again
+	// I was just playing with them and got tired of changing the interface
+	// whenever i wanted to try another algorithm
+	private BestFirstTraversator t;
+	// ********************************************************************
+	private Node goalNode;
+	private Deque<Node> path;
 
 	// these are temporary, do the comments above the scan method later and
 	// these should change
@@ -83,27 +97,66 @@ public class Spartan extends Moveable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		int asdf = Utils.getMaxIndex(actions);
-		switch (asdf) {
+		int resultsIndx = Utils.getMaxIndex(actions);
+		Node[][] travMaze = GameController.getNodes();
+
+		switch (resultsIndx) {
 		case 0:
-			System.out.println("going for the sword");
+			System.out.println("going for the sword@" + swrdNearby);
+			goalNode = travMaze[(int) swrdNearby / 1000][swrdNearby % 1000];
+			t = new BestFirstTraversator(goalNode);
 			break;
 		case 1:
-			System.out.println("going for the help");
+			System.out.println("going for the help@" + hlpNearby);
+			goalNode = travMaze[(int) hlpNearby / 1000][hlpNearby % 1000];
+			t = new BestFirstTraversator(goalNode);
 			break;
 		case 2:
-			System.out.println("going for the bomb");
+			System.out.println("going for the bomb@" + bmbNearby);
+			if (bmbNearby == 0) {
+				System.out.println("broke");
+				break;
+			}
+			goalNode = travMaze[(int) bmbNearby / 1000][bmbNearby % 1000];
+			t = new BestFirstTraversator(goalNode);
 			break;
 		case 3:
-			System.out.println("going for the hbomb");
+			System.out.println("going for the hbomb" + hbmbNearby);
+			goalNode = travMaze[(int) hbmbNearby / 1000][hbmbNearby % 1000];
+			t = new BestFirstTraversator(goalNode);
 			break;
 		case 4:
+			goalNode = null;
 			System.out.println("wandering");
 			break;
 		default:
 			break;
 		}
 
+		// just doing this for now, basically he will home in on one goal node
+		// and ignore everything until he gets there. need to use the nn and
+		// account for enemies to break that behavior or rework this garbage
+		// also make this a queue and rework the method that builds it in the algorithm
+		// Deque is unecessary...
+		if (path == null) {
+			if (goalNode != null)
+				goalNode.setGoalNode(true);
+			path = t.traverse(travMaze, travMaze[this.getY()][this.getX()]);
+			if (!path.isEmpty())
+				path.removeLast();// the last one is the one he's already on
+			goalNode.setGoalNode(false);
+		}
+		if (!path.isEmpty()) {
+			Node n = path.getLast();
+			if (isValidMove(n.getRow(), n.getCol())) {
+				n = path.pollLast();
+				doMove(n.getRow(), n.getCol());
+
+			}
+			// System.out.println("@" + this.getY() + " " + this.getX());
+			// System.out.println(path);
+		} else
+			path = null;// so messy
 	}
 
 	private int getWanderPos() {
@@ -138,6 +191,7 @@ public class Spartan extends Moveable {
 
 		// start @ current pos, x-5 to x+5
 		// y-5 to y+5
+		//Might up this to 10 or 7 at the least.
 		int startx = x - 5 < 0 ? 0 : x - 5;
 		int endx = x + 5 > 99 ? 99 : x + 5;
 		int starty = y - 5 < 0 ? 0 : y - 5;
@@ -155,28 +209,21 @@ public class Spartan extends Moveable {
 				// faster than dealing with collections
 				switch (maze[i][j]) {
 				case '\u0031':// sword
-					swrdNearby = x + 1000 * y;
+					swrdNearby = j + 1000 * i;
 					break;
 				case '\u0032':// sword
-					hlpNearby = x + 1000 * y;
+					hlpNearby = j + 1000 * i;
 					break;
 				case '\u0033':// sword
-					bmbNearby = x + 1000 * y;
+					bmbNearby = j + 1000 * i;
 					break;
 				case '\u0034':// sword
-					hbmbNearby = x + 1000 * y;
+					hbmbNearby = j + 1000 * i;
 					break;
 				default:
 					break;
 				}
 			}
-		}
-	}
-
-	private void doValidMove(int y, int x) {
-		Maze model = this.getModel();
-		if (isValidMove(y, x)) {
-			this.doMove(y, x);
 		}
 	}
 }
