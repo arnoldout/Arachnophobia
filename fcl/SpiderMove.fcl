@@ -97,7 +97,7 @@ FUNCTION_BLOCK FriendHeal
 	END_VAR
 	
 	VAR_OUTPUT
-		desperateness : REAL;
+		attraction : REAL;
 	END_VAR
 	
 	FUZZIFY friendDistance

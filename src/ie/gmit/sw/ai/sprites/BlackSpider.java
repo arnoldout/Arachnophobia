@@ -13,18 +13,27 @@ public class BlackSpider extends Spider {
 	@Override
 	public void run() {
 		try{
-			double pickupRisk = SpiderService.getInstance().getPickupRisk(getModel(), getX(), getY(), getHealth());
-			double spartanRisk = SpiderService.getInstance().getSpartanRisk(getX(), getY(), getHealth());
-			double friendlyRisk = SpiderService.getInstance().getFriendlyRisk(getModel(), getX(), getY(),getSpriteChar() ,getHealth());
-			System.out.println("Pickup Risk :"+pickupRisk);
-			System.out.println("Spartan Risk :"+spartanRisk);
-			System.out.println("friendly Risk :"+friendlyRisk);
+			DistanceRisk pickupRisk = SpiderService.getInstance().getPickupRisk(getModel(), getX(), getY(), getHealth());
+			DistanceRisk spartanRisk = SpiderService.getInstance().getSpartanRisk(getX(), getY(), getHealth());
+			DistanceRisk friendlyRisk = SpiderService.getInstance().getFriendlyRisk(getModel(), getX(), getY(),getSpriteChar() ,getHealth());
+			compareRisks(pickupRisk, spartanRisk, friendlyRisk);
+			//quickly compare 3 objects, get the highest object, if his x is bigger than ours, move up, if y is bigger, move left, if both randomize
 			moveDown();
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
+	}
+	public DistanceRisk compareRisks(DistanceRisk ...distanceRisks )
+	{
+		DistanceRisk highest = new DistanceRisk(0,0,0);
+		for (int i = 0; i < distanceRisks.length; i++) {
+			if(distanceRisks[i].getRisk()>highest.getRisk()){
+				highest = distanceRisks[i];
+			}
+		}
+		return highest;
 	}
 	
 }

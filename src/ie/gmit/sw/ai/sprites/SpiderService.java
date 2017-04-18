@@ -27,9 +27,9 @@ public class SpiderService {
 	}
 
 	
-	public double getFriendlyRisk(Maze m, int x, int y,char spiderType, int health)
+	public DistanceRisk getFriendlyRisk(Maze m, int x, int y,char spiderType, int health)
 	{
-		XYPair pair = findNearestItem(m, x, y, new HashSet<Character>(Arrays.asList(new Character(spiderType))));
+		DistanceRisk pair = findNearestItem(m, x, y, new HashSet<Character>(Arrays.asList(new Character(spiderType))));
 		double friendDist = 0;
 		
 		if(pair==null)
@@ -44,39 +44,44 @@ public class SpiderService {
 		functionBlock.setVariable("health", health);
 		functionBlock.evaluate();
 		Variable risk = functionBlock.getVariable("desperateness");
-		return risk.getLatestDefuzzifiedValue();
+		pair.setRisk(risk.getLatestDefuzzifiedValue());
+		return pair;
 	}
 	
 
-	public double getSpartanRisk(int x, int y, int health) {
-		int spartanDist = spartanDistance(x, y);
+	public DistanceRisk getSpartanRisk(int x, int y, int health) {
+		DistanceRisk spartanRisk = findSpartan();
+		int spartanDist = spartanDistance(spartanRisk.getX(), spartanRisk.getY(),x, y);
 		FunctionBlock functionBlock = fis.getFunctionBlock("SpartanSystem");
 		functionBlock.setVariable("spartanPos", spartanDist);
 		functionBlock.setVariable("health", health);
 		functionBlock.evaluate();
 		Variable risk = functionBlock.getVariable("risk");
-		return risk.getLatestDefuzzifiedValue();
+		spartanRisk.setRisk(risk.getLatestDefuzzifiedValue());
+		return spartanRisk;
 	}
-
-	public int spartanDistance(int x, int y) {
+	public DistanceRisk findSpartan(int x, int y)
+	{
 		SpriteService ss = SpriteService.getInstance();
 		for (int i = 0; i < ss.spritesSize(); i++) {
 			if (ss.getSprite(i) instanceof Spartan) {
-				int xVal = Math.abs(ss.getSprite(i).getX() - x);
-				int yVal = Math.abs(ss.getSprite(i).getY() - y);
-				if (xVal <= 10 && yVal <= 10) {
-					int averagePercentage = ((xVal + yVal) / 2) * 10;
-					return averagePercentage;
-				}
-				break;
+				return new DistanceRisk(ss.getSprite(i).getX(), ss.getSprite(i).getY());
 			}
 		}
+		return new DistanceRisk(x,y);
+	}
+	public int spartanDistance(int spriteX, int spriteY, int x, int y) {
+		int xVal = Math.abs(spriteX - x);
+		int yVal = Math.abs(spriteY - y);
+		if (xVal <= 10 && yVal <= 10) {
+			int averagePercentage = ((xVal + yVal) / 2) * 10;
+			return averagePercentage;
+		}
 		return 0;
-
 	}
 
-	public double getPickupRisk(Maze m, int x, int y, int health) {
-		XYPair pair = findNearestItem(m, x, y, new HashSet<Character>(Arrays.asList(new Character('1'),new Character('2'),new Character('3'),new Character('4'))));
+	public DistanceRisk getPickupRisk(Maze m, int x, int y, int health) {
+		DistanceRisk pair = findNearestItem(m, x, y, new HashSet<Character>(Arrays.asList(new Character('1'),new Character('2'),new Character('3'),new Character('4'))));
 		double d = euclideanDistance(x, y, pair.getX(), pair.getY());
 		SpriteService ss = SpriteService.getInstance();
 		double spartanEuclid = 0;
@@ -92,15 +97,16 @@ public class SpiderService {
 		functionBlock.setVariable("health", health);
 		functionBlock.evaluate();
 		Variable risk = functionBlock.getVariable("aggressiveness");
-		return risk.getLatestDefuzzifiedValue();
+		pair.setRisk(risk.getLatestDefuzzifiedValue());
+		return pair;
 	}
 
-	public XYPair findNearestItem(Maze m, int x, int y, Set<Character> chars) {
+	public DistanceRisk findNearestItem(Maze m, int x, int y, Set<Character> chars) {
 		/*
 		 * Can easily be made better
 		 */
 		char[][] b = m.getMaze();
-		XYPair pair = null;
+		DistanceRisk pair = null;
 		// quick search of surrounding area, fuzzy spiders can only see what's
 		// in their vision
 		System.out.println("x:" + x + "y:" + y);
@@ -108,7 +114,7 @@ public class SpiderService {
 			for (int j = -5; j < 6; j++) {
 				try {
 					if (chars.contains(new Character(b[x + i][y + j]))) {
-						pair = new XYPair(x + i, y + j);
+						pair = new DistanceRisk(x + i, y + j);
 					}
 				} catch (ArrayIndexOutOfBoundsException e) {
 					//just searching outside of array, its fine

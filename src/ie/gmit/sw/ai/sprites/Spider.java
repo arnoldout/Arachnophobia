@@ -24,17 +24,17 @@ public abstract class Spider extends Moveable{
 		//System.out.println("Risk :"+risk.getLatestDefuzzifiedValue());
 	}
 
-	public List<XYPair> getValidMoves()
+	public List<DistanceRisk> getValidMoves()
 	{
-		List<XYPair> dists = new ArrayList<XYPair>();
-		dists.add(new XYPair(this.getX()+1, this.getY()));
-		dists.add(new XYPair(this.getX()-1, this.getY()));
-		dists.add(new XYPair(this.getX(), this.getY()+1));
-		dists.add(new XYPair(this.getX(), this.getY()-1));
+		List<DistanceRisk> dists = new ArrayList<DistanceRisk>();
+		dists.add(new DistanceRisk(this.getX()+1, this.getY()));
+		dists.add(new DistanceRisk(this.getX()-1, this.getY()));
+		dists.add(new DistanceRisk(this.getX(), this.getY()+1));
+		dists.add(new DistanceRisk(this.getX(), this.getY()-1));
 		return dists;
 	}
 
-	public int highestSpartanDist(List<XYPair> a)
+	public int highestSpartanDist(List<DistanceRisk> a)
 	{
 		Integer highestVal = 0;
 		for (int i = 0; i < a.size(); i++) {
@@ -58,7 +58,7 @@ public abstract class Spider extends Moveable{
 		}
 		return highestVal;
 	}
-	public int spartanDist(XYPair p)
+	public int spartanDist(DistanceRisk p)
 	{
 		SpriteService ss = SpriteService.getInstance();
 		for (int i = 0; i < ss.spritesSize(); i++) {
