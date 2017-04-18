@@ -49,6 +49,13 @@ public abstract class Moveable implements Runnable {
 	{
 		doMove(x, y+1);
 	}
+	public int getRow(){
+		return this.getY();
+	}
+	public int getCol(){
+		return this.getX();
+	}
+	
 	public void doMove(int row, int col){
 		if (row <= model.size() - 1 && row > 0 &&
 				col <= model.size() - 1 && col > 0 &&

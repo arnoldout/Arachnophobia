@@ -18,8 +18,8 @@ public class MazeNodeConverter {
 				// build paths if the left one is not a hedge and the top is not
 				// a hedge
 				if (i > 0) {
-					
-					if (maze[i - 1][j] != '0') {
+					//build top
+					if (maze[i - 1][j] != '0' && maze[i][j] != '0') {
 						// 52 is the int of hydrogen bomb, so any actual
 						// character is above this
 						// this does however mean that pickups will be
@@ -27,15 +27,15 @@ public class MazeNodeConverter {
 						// might want to add paths when the spartan picks them
 						// up...
 						
-						nodes[i][j].addPath(Direction.West);
-						nodes[i - 1][j].addPath(Direction.East);
+						nodes[i][j].addPath(Direction.North);
+						nodes[i - 1][j].addPath(Direction.South);
 					}
 				}
 				if (j > 0) {
-					// build top
-					if (maze[i][j - 1] != '0') {
-						nodes[i][j].addPath(Direction.North);
-						nodes[i][j - 1].addPath(Direction.South);
+					// build left
+					if (maze[i][j - 1] != '0' && maze[i][j] != '0') {
+						nodes[i][j].addPath(Direction.West);
+						nodes[i][j - 1].addPath(Direction.East);
 					}
 				}
 			}

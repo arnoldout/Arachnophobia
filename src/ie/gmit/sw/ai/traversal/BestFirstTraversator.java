@@ -18,7 +18,7 @@ public class BestFirstTraversator  {
 	public List<Node> traverse(Node[][] maze, Node node) {
 
 		LinkedList<Node> queue = new LinkedList<Node>();
-		LinkedList<Node> visited = new LinkedList<Node>();
+		LinkedList<Node> tampered = new LinkedList<Node>();
 		queue.addFirst(node);
 		List<Node> list = new LinkedList<Node>();
 
@@ -26,17 +26,20 @@ public class BestFirstTraversator  {
 			while (!queue.isEmpty()) {
 				node = queue.poll();
 				node.setVisited(true);
-				visited.add(node);
+				tampered.offer(node);
 
 				if (node.isGoalNode()) {
 					System.out.println("found the goal, getting path!");
+					
 					getPath(node, list);
+					
 				}
 
 				Node[] children = node.children(maze);
 				for (int i = 0; i < children.length; i++) {
 					if (children[i] != null && !children[i].isVisited()) {
 						children[i].setParent(node);
+						tampered.offer(children[i]);
 						queue.addFirst(children[i]);
 					}
 				}
@@ -52,8 +55,9 @@ public class BestFirstTraversator  {
 		}
 		Collections.reverse(list);
 		//cleanup the visited nodes for future use
-		for (Node n : visited) {
+		for (Node n : tampered) {
 			n.setVisited(false);
+			n.setParent(null);
 		}
 		return list;
 

@@ -95,6 +95,20 @@ public class Node {
 		paths[index] = direction;
 	}
 
+	public void removePath(Direction direction) {
+		if (this.hasDirection(direction)) {
+
+			Direction[] temp = new Direction[paths.length - 1];
+			int ind = 0;
+			for (int i = 0; i < paths.length; i++) {
+				if (paths[i] != direction)
+					temp[ind++] = paths[i];
+			}
+			paths = temp;
+		}
+	
+	}
+
 	public boolean isVisited() {
 		return visited;
 	}

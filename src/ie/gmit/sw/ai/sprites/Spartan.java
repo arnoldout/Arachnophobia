@@ -13,6 +13,7 @@ import ie.gmit.sw.ai.nn.activator.Activator.ActivationFunction;
 import ie.gmit.sw.ai.traversal.BestFirstTraversator;
 import ie.gmit.sw.ai.traversal.MazeNodeConverter;
 import ie.gmit.sw.ai.traversal.Node;
+import ie.gmit.sw.ai.traversal.Node.Direction;
 
 public class Spartan extends Moveable {
 	// move this guy out of here, maybe. it's okay to leave one in the spartan
@@ -107,7 +108,7 @@ public class Spartan extends Moveable {
 			e.printStackTrace();
 		}
 		int resultsIndx = Utils.getMaxIndex(actions);
-		
+
 		// the index determines what his goal will be, cases should be what
 		// index each output node is
 		// maybe move to a better code structure for this if we get around to it
@@ -158,14 +159,13 @@ public class Spartan extends Moveable {
 				}
 				try {
 					path = new LinkedList<Node>((t.traverse(travMaze, travMaze[this.getY()][this.getX()])));
+					System.out.println("have path: " + path);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				if (!path.isEmpty()) {
 					path.poll();// the last one is the one he's
 								// already on
-					printPOS();
-					System.out.println("initial poll, his path now: " + path);
 				}
 				goalNode.setGoalNode(false);
 			}
@@ -177,11 +177,19 @@ public class Spartan extends Moveable {
 					n = path.poll();
 					doMove(n.getRow(), n.getCol());
 
-				} else
-					System.out.println("Spartan cant go there!");
+				} else {
+					if (this.getMaze()[n.getRow()][n.getCol()] != '0')
+						try {
+							doPickup(n.getRow(), n.getCol());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+				}
 			}
 		}
-		// he doesnt have a goal, which means he is just goint to wander around
+
+		// he doesnt have a goal, which means he is just going to wander around
 		// make sure to set the last goal to null just in case he reached his
 		// last goal or something
 		else {
@@ -196,6 +204,79 @@ public class Spartan extends Moveable {
 		}
 	}
 
+	// for the spartan, replaces the pickup he grabbed with a wall
+	// the t/f is there for safety, if he sees this method return true
+	// he triggers wh/e it was supposed to do.
+	private boolean doPickup(int row, int col) {
+		char target = this.getMaze()[row][col];
+		if (target < '5' && target > '0') {
+			this.getModel().set(row, col, '0');
+
+			// get rid of these ifs, just to test a bug fix for now
+			if (row < this.getRow() && col == this.getCol()) {// loot is above
+				this.travMaze[this.getY()][this.getX()].removePath(Direction.North);
+				this.travMaze[row][col].removePath(Direction.South);
+			} else if (row > this.getRow() && col == this.getCol())// loot is
+																	// below
+			{
+				this.travMaze[this.getY()][this.getX()].removePath(Direction.South);
+				this.travMaze[row][col].removePath(Direction.North);
+			}
+			if (row == this.getRow() && col < this.getCol()) {// loot is left
+				this.travMaze[this.getY()][this.getX()].removePath(Direction.West);
+				this.travMaze[row][col].removePath(Direction.East);
+			} else if (row == this.getRow() && col > this.getCol())// loot is
+																	// right
+			{
+				this.travMaze[this.getY()][this.getX()].removePath(Direction.East);
+				this.travMaze[row][col].removePath(Direction.West);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	private int[][] getBounds(int row, int col, int radius) {
+		int max = this.getMaze().length;
+		row = row - radius < 0 ? 0 : row - radius;
+		int rowMax = row + radius > max ? max : row + radius;
+		col = col - radius < 0 ? 0 : col - radius;
+		int colMax = col + radius > max ? max : row + radius;
+		int[][] arr = { { row, rowMax }, { col, colMax } };
+		return arr;
+	}
+
+	// small bomb, kill spiders in a radius
+	//unfinished, needs to kill the threads not just remove the char from the array
+	private void boom(int row, int col, int radius) {
+		int[][] bounds = getBounds(row, col, radius);
+
+		for (int i = bounds[0][0]; i < bounds[0][1]; i++) {
+			for (int j = bounds[1][0]; j < bounds[1][1]; j++) {
+				if (this.getMaze()[i][j] > 5)
+					this.getModel().set(i, j, ' ');
+			}
+		}
+	}
+
+	// big bomb, kill spiders in a big radius
+	private void smallBoom(int row, int col) {
+		boom(row, col, 2);
+	}
+
+	// big bomb, kill spiders in a big radius
+	private void bigBoom(int row, int col) {
+		boom(row, col, 4);
+	}
+
+	// get a sword, for now it just buffs health.
+	private void getSword() {
+	}
+
+	// get help, provides a map to the exit
+	private void getHelp() {
+	}
+
 	private void printPOS() {
 		System.out.println(this.getY() + " " + this.getX());
 	}
@@ -205,15 +286,15 @@ public class Spartan extends Moveable {
 		int i = (int) (Math.random() * range) + 1;
 		switch (i) {
 		case 1:
-			return encodePos((this.getX() - 1), this.getY());
+			return encodePos((this.getY() - 1), this.getX());
 		case 2:
-			return encodePos(this.getX(), (this.getY() - 1));
+			return encodePos(this.getY(), (this.getX() - 1));
 		case 3:
-			return encodePos((this.getX() + 1), this.getY());
+			return encodePos((this.getY() + 1), this.getX());
 		case 4:
-			return encodePos(this.getX(), (this.getY() + 1));
+			return encodePos(this.getY(), (this.getX() + 1));
 		default:
-			return encodePos(this.getX(), (this.getY() - 1));
+			return encodePos(this.getY(), (this.getX() - 1));
 		}
 
 	}
@@ -246,10 +327,10 @@ public class Spartan extends Moveable {
 		// start @ current pos, x-5 to x+5
 		// y-5 to y+5
 		// Might up this to 10 or 7 at the least.
-		int startx = x - 5 < 0 ? 0 : x - 5;
-		int endx = x + 5 > 99 ? 99 : x + 5;
-		int starty = y - 5 < 0 ? 0 : y - 5;
-		int endy = y + 5 > 99 ? 99 : y + 5;
+		int startx = x - 10 < 0 ? 0 : x - 10;
+		int endx = x + 10 > 99 ? 99 : x + 10;
+		int starty = y - 10 < 0 ? 0 : y - 10;
+		int endy = y + 10 > 99 ? 99 : y + 10;
 
 		for (int i = starty; i < endy; i++) {
 			for (int j = startx; j < endx; j++) {
