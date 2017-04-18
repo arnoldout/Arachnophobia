@@ -23,6 +23,10 @@ public abstract class Moveable implements Runnable {
 		this.model.set(y, x, spriteChar);
 	}
 
+	public char getSpriteChar() {
+		return spriteChar;
+	}
+
 	public char getSquare(int a, int b) {
 		return model.get(a, b);
 	}

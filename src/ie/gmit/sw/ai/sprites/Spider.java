@@ -6,24 +6,22 @@ import java.util.Random;
 
 import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.SpriteService;
-import net.sourceforge.jFuzzyLogic.FIS;
-import net.sourceforge.jFuzzyLogic.rule.Variable;
 
 public abstract class Spider extends Moveable{
 	//eventually move to classes
-	FIS fis;
+	//FIS fis;
 
 	Random r = new Random();
 	public Spider(Maze model, int x, int y, boolean isAlive, char spriteChar) {
 		super(model, x, y, isAlive, spriteChar);
 		String fileName = "fcl/SpiderMove.fcl";
-        fis = FIS.load(fileName,true);
+        //fis = FIS.load(fileName,true);
 		setHealth(100);
 	}
 	public void eval()
 	{
-		Variable risk = fis.getFunctionBlock("SpartanSystem").getVariable("risk");
-		System.out.println("Risk :"+risk.getLatestDefuzzifiedValue());
+		//Variable risk = fis.getFunctionBlock("SpartanSystem").getVariable("risk");
+		//System.out.println("Risk :"+risk.getLatestDefuzzifiedValue());
 	}
 
 	public List<XYPair> getValidMoves()

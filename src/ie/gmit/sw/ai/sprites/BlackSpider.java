@@ -1,107 +1,30 @@
 package ie.gmit.sw.ai.sprites;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import ie.gmit.sw.ai.Maze;
-import ie.gmit.sw.ai.SpriteService;
-import net.sourceforge.jFuzzyLogic.FIS;
-import net.sourceforge.jFuzzyLogic.FunctionBlock;
-import net.sourceforge.jFuzzyLogic.rule.Variable;
 
 public class BlackSpider extends Spider {
-	FIS fis;
 
 	Random r = new Random();
 	public BlackSpider(Maze model, int x, int y, boolean isAlive) {
-		super(model, x, y, isAlive, '\u0036');
-		
-		String fileName = "fcl/SpiderMove.fcl";
-        fis = FIS.load(fileName,true);
-        
-        
+		super(model, x, y, isAlive, '\u0036');        
 	}
 	@Override
 	public void run() {
-		List<XYPair> dists = new ArrayList<XYPair>();
-		dists.add(new XYPair(this.getX()+1, this.getY()));
-		dists.add(new XYPair(this.getX()-1, this.getY()));
-		dists.add(new XYPair(this.getX(), this.getY()+1));
-		dists.add(new XYPair(this.getX(), this.getY()-1));
-		int spartan = highestSpartanDist(dists);
-		
-		
-		System.out.println("Spartan Risk :"+evalSpartanRisk(dists.get(spartan)));
-		
-		
-		doMove(dists.get(spartan).getX(), dists.get(spartan).getY());
-	
-	}
-	
-	public double evalSpartanRisk(XYPair pair)
-	{
-		FunctionBlock functionBlock = fis.getFunctionBlock("SpartanSystem");
-		functionBlock.setVariable("spartanPos", spartanDist(pair));
-		functionBlock.setVariable("health", getHealth());
-		functionBlock.evaluate();
-		
-		functionBlock = fis.getFunctionBlock("BombSystem");
-		//calc spartan euclidean distance to bomb
-		//calc spider euclidean distance to bomb
-		functionBlock.setVariable("spartanPosToBomb", 60);
-		functionBlock.setVariable("spiderPosToBomb", 50);
-		functionBlock.setVariable("health", getHealth());
-		functionBlock.evaluate();
-		
-		Variable risk = functionBlock.getVariable("risk");
-		return risk.getLatestDefuzzifiedValue();
-
-	}
-	public double euclideanDistance(int x1, int y1, int x2, int y2)
-	{
-		return Math.sqrt(Math.pow((x1-x2), 2) + Math.pow((y1-y2), 2));
-	}
-	public int highestSpartanDist(List<XYPair> a)
-	{
-		Integer highestVal = 0;
-		for (int i = 0; i < a.size(); i++) {
-			if(isValidMove(a.get(i).getX(), a.get(i).getY())){
-				if(spartanDist(a.get(i))>highestVal)
-				{
-					highestVal = i;
-				}
-			}
-			else{
-				a.remove(i);
-			}
+		try{
+			double pickupRisk = SpiderService.getInstance().getPickupRisk(getModel(), getX(), getY(), getHealth());
+			double spartanRisk = SpiderService.getInstance().getSpartanRisk(getX(), getY(), getHealth());
+			double friendlyRisk = SpiderService.getInstance().getFriendlyRisk(getModel(), getX(), getY(),getSpriteChar() ,getHealth());
+			System.out.println("Pickup Risk :"+pickupRisk);
+			System.out.println("Spartan Risk :"+spartanRisk);
+			System.out.println("friendly Risk :"+friendlyRisk);
+			moveDown();
 		}
-		if(highestVal==0)
+		catch(Exception e)
 		{
-			//doesn't matter which direction, so just randomly choose one
-			
-			int Low = 0;
-			int High = a.size();
-			highestVal = r.nextInt(High-Low) + Low;
+			e.printStackTrace();
 		}
-		return highestVal;
 	}
-	public int spartanDist(XYPair p)
-	{
-		SpriteService ss = SpriteService.getInstance();
-		for (int i = 0; i < ss.spritesSize(); i++) {
-			if(ss.getSprite(i) instanceof Spartan)
-			{
-				int xVal = Math.abs(ss.getSprite(i).getX()-p.getX());
-				int yVal = Math.abs(ss.getSprite(i).getY()-p.getY());
-				if(xVal<=10&&yVal<=10)
-				{
-					int averagePercentage = ((xVal+yVal)/2)*10;
-					return averagePercentage;
-				}
-				break;
-			}
-		}
-		return 0;
-	}
+	
 }
