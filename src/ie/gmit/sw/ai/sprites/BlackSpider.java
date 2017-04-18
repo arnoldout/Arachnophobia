@@ -16,13 +16,46 @@ public class BlackSpider extends Spider {
 			DistanceRisk pickupRisk = SpiderService.getInstance().getPickupRisk(getModel(), getX(), getY(), getHealth());
 			DistanceRisk spartanRisk = SpiderService.getInstance().getSpartanRisk(getX(), getY(), getHealth());
 			DistanceRisk friendlyRisk = SpiderService.getInstance().getFriendlyRisk(getModel(), getX(), getY(),getSpriteChar() ,getHealth());
-			compareRisks(pickupRisk, spartanRisk, friendlyRisk);
+			makeMove(compareRisks(pickupRisk, spartanRisk, friendlyRisk));
 			//quickly compare 3 objects, get the highest object, if his x is bigger than ours, move up, if y is bigger, move left, if both randomize
-			moveDown();
+			
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
+		}
+	}
+	public void makeMove(DistanceRisk risk)
+	{
+		if(risk.getX()!=this.getX()&&risk.getY()!=this.getY())
+		{
+			int Low = 1;
+			int High = 3;
+			int result = r.nextInt(High-Low) + Low;
+			//if objective is equally far 
+			if(result ==1)
+			{
+				risk.setX(this.getX());
+			}
+			else{
+				risk.setY(this.getY());
+			}
+		}
+		if(risk.getX()>this.getX())
+		{
+			moveDown();
+		}
+		else if(risk.getY()>this.getY())
+		{
+			moveRight();
+		}
+		if(risk.getX()<this.getX())
+		{
+			moveUp();
+		}
+		else if(risk.getY()<this.getY())
+		{
+			moveLeft();
 		}
 	}
 	public DistanceRisk compareRisks(DistanceRisk ...distanceRisks )

@@ -25,6 +25,35 @@ public class SpiderService {
 		}
 		return ss;
 	}
+	
+	public DistanceRisk getPickupRisk(Maze m, int x, int y, int health) {
+		DistanceRisk pair = findNearestItem(m, x, y, new HashSet<Character>(Arrays.asList(new Character('1'),new Character('2'),new Character('3'),new Character('4'))));
+		
+		if(pair!=null){
+			double d = euclideanDistance(x, y, pair.getX(), pair.getY());
+			SpriteService ss = SpriteService.getInstance();
+			double spartanEuclid = 0;
+			for (int i = 0; i < ss.spritesSize(); i++) {
+				if (ss.getSprite(i) instanceof Spartan) {
+					spartanEuclid = euclideanDistance(ss.getSprite(i).getX(), ss.getSprite(i).getY(), pair.getX(), pair.getY());
+					break;
+				}
+			}
+			FunctionBlock functionBlock = fis.getFunctionBlock("BombSystem");
+			functionBlock.setVariable("spartanPosToBomb", spartanEuclid);
+			functionBlock.setVariable("spiderPosToBomb", d);
+			functionBlock.setVariable("health", health);
+			functionBlock.evaluate();
+			Variable risk = functionBlock.getVariable("aggressiveness");
+			pair.setRisk(risk.getLatestDefuzzifiedValue());
+		}
+		else{
+			//will just send spider to same spot
+			pair = new DistanceRisk(x, y, 0);
+		}
+		return pair;
+	}
+
 
 	
 	public DistanceRisk getFriendlyRisk(Maze m, int x, int y,char spiderType, int health)
@@ -32,35 +61,41 @@ public class SpiderService {
 		DistanceRisk pair = findNearestItem(m, x, y, new HashSet<Character>(Arrays.asList(new Character(spiderType))));
 		double friendDist = 0;
 		
-		if(pair==null)
+		if(pair!=null)
 		{
-			friendDist = 0;
-		}else{
 			friendDist = euclideanDistance(pair.getX(), pair.getY(), x, y);
+			FunctionBlock functionBlock = fis.getFunctionBlock("FriendHeal");
+			functionBlock.setVariable("friendDistance", friendDist);
+			functionBlock.setVariable("health", health);
+			functionBlock.evaluate();
+			Variable risk = functionBlock.getVariable("attraction");
+			pair.setRisk(risk.getLatestDefuzzifiedValue());
 		}
-		System.out.println(friendDist);
-		FunctionBlock functionBlock = fis.getFunctionBlock("FriendHeal");
-		functionBlock.setVariable("friendDistance", friendDist);
-		functionBlock.setVariable("health", health);
-		functionBlock.evaluate();
-		Variable risk = functionBlock.getVariable("desperateness");
-		pair.setRisk(risk.getLatestDefuzzifiedValue());
+		else{
+			pair = new DistanceRisk(x, y, 0);
+		}
 		return pair;
 	}
 	
 
 	public DistanceRisk getSpartanRisk(int x, int y, int health) {
 		DistanceRisk spartanRisk = findSpartan();
-		int spartanDist = spartanDistance(spartanRisk.getX(), spartanRisk.getY(),x, y);
-		FunctionBlock functionBlock = fis.getFunctionBlock("SpartanSystem");
-		functionBlock.setVariable("spartanPos", spartanDist);
-		functionBlock.setVariable("health", health);
-		functionBlock.evaluate();
-		Variable risk = functionBlock.getVariable("risk");
-		spartanRisk.setRisk(risk.getLatestDefuzzifiedValue());
+		if(spartanRisk!=null)
+		{
+			int spartanDist = spartanDistance(spartanRisk.getX(), spartanRisk.getY(),x, y);
+			FunctionBlock functionBlock = fis.getFunctionBlock("SpartanSystem");
+			functionBlock.setVariable("spartanPos", spartanDist);
+			functionBlock.setVariable("health", health);
+			functionBlock.evaluate();
+			Variable risk = functionBlock.getVariable("risk");
+			spartanRisk.setRisk(risk.getLatestDefuzzifiedValue());
+		}
+		else{
+			spartanRisk = new DistanceRisk(x, y, 0);
+		}
 		return spartanRisk;
 	}
-	public DistanceRisk findSpartan(int x, int y)
+	public DistanceRisk findSpartan()
 	{
 		SpriteService ss = SpriteService.getInstance();
 		for (int i = 0; i < ss.spritesSize(); i++) {
@@ -68,7 +103,7 @@ public class SpiderService {
 				return new DistanceRisk(ss.getSprite(i).getX(), ss.getSprite(i).getY());
 			}
 		}
-		return new DistanceRisk(x,y);
+		return null;
 	}
 	public int spartanDistance(int spriteX, int spriteY, int x, int y) {
 		int xVal = Math.abs(spriteX - x);
@@ -80,26 +115,6 @@ public class SpiderService {
 		return 0;
 	}
 
-	public DistanceRisk getPickupRisk(Maze m, int x, int y, int health) {
-		DistanceRisk pair = findNearestItem(m, x, y, new HashSet<Character>(Arrays.asList(new Character('1'),new Character('2'),new Character('3'),new Character('4'))));
-		double d = euclideanDistance(x, y, pair.getX(), pair.getY());
-		SpriteService ss = SpriteService.getInstance();
-		double spartanEuclid = 0;
-		for (int i = 0; i < ss.spritesSize(); i++) {
-			if (ss.getSprite(i) instanceof Spartan) {
-				spartanEuclid = euclideanDistance(ss.getSprite(i).getX(), ss.getSprite(i).getY(), pair.getX(), pair.getY());
-				break;
-			}
-		}
-		FunctionBlock functionBlock = fis.getFunctionBlock("BombSystem");
-		functionBlock.setVariable("spartanPosToBomb", spartanEuclid);
-		functionBlock.setVariable("spiderPosToBomb", d);
-		functionBlock.setVariable("health", health);
-		functionBlock.evaluate();
-		Variable risk = functionBlock.getVariable("aggressiveness");
-		pair.setRisk(risk.getLatestDefuzzifiedValue());
-		return pair;
-	}
 
 	public DistanceRisk findNearestItem(Maze m, int x, int y, Set<Character> chars) {
 		/*

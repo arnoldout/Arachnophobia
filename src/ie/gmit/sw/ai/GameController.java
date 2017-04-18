@@ -66,7 +66,7 @@ public class GameController {
 	// init purposes
 	private void addFeature(SpriteType s, char feature, char replace) {
 		int counter = 0;
-		while (counter < 1) {
+		while (counter < feature) {
 
 			int row = (int) (model.getMaze().length * Math.random());
 			int col = (int) (model.getMaze()[0].length * Math.random());
