@@ -1,7 +1,7 @@
 package ie.gmit.sw.ai.traversal;
 
-import java.util.Deque;
+import java.util.List;
 
 public interface Traversator {
-	public Deque<Node> traverse(Node[][] maze, Node start);
+	public List<Node> traverse(Node[][] maze, Node start);
 }

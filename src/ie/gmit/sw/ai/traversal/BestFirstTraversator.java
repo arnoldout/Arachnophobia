@@ -1,9 +1,8 @@
 package ie.gmit.sw.ai.traversal;
 
 import java.util.Collections;
-import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
 
 public class BestFirstTraversator  {
 	private Node goal;
@@ -16,20 +15,21 @@ public class BestFirstTraversator  {
 		this.goal = goal;
 	}
 
-	public Deque<Node> traverse(Node[][] maze, Node node) {
+	public List<Node> traverse(Node[][] maze, Node node) {
 
 		LinkedList<Node> queue = new LinkedList<Node>();
+		LinkedList<Node> visited = new LinkedList<Node>();
 		queue.addFirst(node);
-		Deque<Node> list = new LinkedList<Node>();
+		List<Node> list = new LinkedList<Node>();
 
 		try {
 			while (!queue.isEmpty()) {
 				node = queue.poll();
 				node.setVisited(true);
-				System.out.println(node);
+				visited.add(node);
 
 				if (node.isGoalNode()) {
-					System.out.println("getting path!");
+					System.out.println("found the goal, getting path!");
 					getPath(node, list);
 				}
 
@@ -43,7 +43,6 @@ public class BestFirstTraversator  {
 
 				// Sort the whole queue. Effectively a priority queue, first in,
 				// best out
-				System.out.println("sorting");
 				Collections.sort(queue,
 						(Node current, Node next) -> current.getHeuristic(goal) - next.getHeuristic(goal));
 			}
@@ -51,11 +50,16 @@ public class BestFirstTraversator  {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		Collections.reverse(list);
+		//cleanup the visited nodes for future use
+		for (Node n : visited) {
+			n.setVisited(false);
+		}
 		return list;
 
 	}
 
-	private void getPath(Node node, Queue<Node> list) {
+	private void getPath(Node node, List<Node> list) {
 		list.add(node);
 		if (node.getParent() != null)
 			getPath(node.getParent(), list);

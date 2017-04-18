@@ -39,14 +39,14 @@ public class GameController {
 		// and adds that many of that to the map at random spots
 		// we can use this stuff, just need to make sure we are creating the
 		// runnables as well.
-		addFeature(SpriteType.spider_black, '\u0036', '0');
-		addFeature(SpriteType.spider_blue, '\u0037', '0'); 
-		addFeature(SpriteType.spider_brown, '\u0038', '0'); 
-		addFeature(SpriteType.spider_green, '\u0039', '0'); 
-		addFeature(SpriteType.spider_grey, '\u003A', '0'); 
-		addFeature(SpriteType.spider_orange, '\u003B', '0'); 
-		addFeature(SpriteType.spider_red, '\u003C', '0'); 
-		addFeature(SpriteType.spider_yellow, '\u003D', '0'); 
+//		addFeature(SpriteType.spider_black, '\u0036', '0');
+//		addFeature(SpriteType.spider_blue, '\u0037', '0'); 
+//		addFeature(SpriteType.spider_brown, '\u0038', '0'); 
+//		addFeature(SpriteType.spider_green, '\u0039', '0'); 
+//		addFeature(SpriteType.spider_grey, '\u003A', '0'); 
+//		addFeature(SpriteType.spider_orange, '\u003B', '0'); 
+//		addFeature(SpriteType.spider_red, '\u003C', '0'); 
+//		addFeature(SpriteType.spider_yellow, '\u003D', '0'); 
 	}
 
 	// this might be an issue later, due to the way the search algos work, they
@@ -78,8 +78,20 @@ public class GameController {
 			}
 		}
 	}
+	
+	//for the spartan, replaces the pickup he grabbed with a wall
+	//the t/f is there for safety, if he sees this method return true
+	//he triggers wh/e it was supposed to do.
+	public boolean doPickup(int row, int col){
+		char target = model.get(row, col);
+		if(target < 5 && target > 0){
+			model.set(row, col, '0');
+			return true;
+		}
+		return false;
+	}
 
-	public void placePlayer(int x, int y) {
+	public void placePlayer(int y, int x) {
 		Moveable spartan = SpriteType.spartan.getNewInstance(model, x, y, true);
 		god.scheduleAtFixedRate(spartan, 0, 2, TimeUnit.SECONDS);
 	}

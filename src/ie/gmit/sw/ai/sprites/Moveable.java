@@ -53,9 +53,9 @@ public abstract class Moveable implements Runnable {
 		if (row <= model.size() - 1 && row > 0 &&
 				col <= model.size() - 1 && col > 0 &&
 				model.get(row, col) == ' '){
-			model.set(x, y, blank);
-			x=row;
-			y=col;
+			model.set(y, x, blank);
+			y=row;
+			x=col;
 			model.set(row, col, spriteChar);
 		}
 	}
