@@ -12,7 +12,11 @@ public abstract class Moveable implements Runnable {
 	private boolean isAlive;
 	// private neruralController
 	// private fuzzyController
-
+/*
+ * Tomorrow move robs stuff from spartan into here	
+ * 
+ * 
+ */
 	public Moveable(Maze model, int x, int y, boolean isAlive, char spriteChar) {
 		super();
 		this.model = model;
