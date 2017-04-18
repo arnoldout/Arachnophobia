@@ -24,22 +24,21 @@ public class BlackSpider extends Spider {
 	}
 	@Override
 	public void run() {
-	try{
 		List<XYPair> dists = new ArrayList<XYPair>();
 		dists.add(new XYPair(this.getX()+1, this.getY()));
 		dists.add(new XYPair(this.getX()-1, this.getY()));
 		dists.add(new XYPair(this.getX(), this.getY()+1));
 		dists.add(new XYPair(this.getX(), this.getY()-1));
 		int spartan = highestSpartanDist(dists);
+		
+		
 		System.out.println("Spartan Risk :"+evalSpartanRisk(dists.get(spartan)));
 		
 		
 		doMove(dists.get(spartan).getX(), dists.get(spartan).getY());
+	
 	}
-	catch(Exception e){
-		e.printStackTrace();
-	}
-	}
+	
 	public double evalSpartanRisk(XYPair pair)
 	{
 		FunctionBlock functionBlock = fis.getFunctionBlock("SpartanSystem");
@@ -58,6 +57,10 @@ public class BlackSpider extends Spider {
 		Variable risk = functionBlock.getVariable("risk");
 		return risk.getLatestDefuzzifiedValue();
 
+	}
+	public double euclideanDistance(int x1, int y1, int x2, int y2)
+	{
+		return Math.sqrt(Math.pow((x1-x2), 2) + Math.pow((y1-y2), 2));
 	}
 	public int highestSpartanDist(List<XYPair> a)
 	{
