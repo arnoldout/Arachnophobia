@@ -24,23 +24,40 @@ public class BlackSpider extends Spider {
 	}
 	@Override
 	public void run() {
-	
+	try{
 		List<XYPair> dists = new ArrayList<XYPair>();
 		dists.add(new XYPair(this.getX()+1, this.getY()));
 		dists.add(new XYPair(this.getX()-1, this.getY()));
 		dists.add(new XYPair(this.getX(), this.getY()+1));
 		dists.add(new XYPair(this.getX(), this.getY()-1));
-		int y = highestSpartanDist(dists);
+		int spartan = highestSpartanDist(dists);
+		System.out.println("Spartan Risk :"+evalSpartanRisk(dists.get(spartan)));
 		
-		FunctionBlock functionBlock = fis.getFunctionBlock("MovementSystem");
-		fis.setVariable("spartanPos", spartanDist((dists.get(y))));
-		fis.setVariable("health", getHealth());
-		fis.evaluate();
+		
+		doMove(dists.get(spartan).getX(), dists.get(spartan).getY());
+	}
+	catch(Exception e){
+		e.printStackTrace();
+	}
+	}
+	public double evalSpartanRisk(XYPair pair)
+	{
+		FunctionBlock functionBlock = fis.getFunctionBlock("SpartanSystem");
+		functionBlock.setVariable("spartanPos", spartanDist(pair));
+		functionBlock.setVariable("health", getHealth());
+		functionBlock.evaluate();
+		
+		functionBlock = fis.getFunctionBlock("BombSystem");
+		//calc spartan euclidean distance to bomb
+		//calc spider euclidean distance to bomb
+		functionBlock.setVariable("spartanPosToBomb", 60);
+		functionBlock.setVariable("spiderPosToBomb", 50);
+		functionBlock.setVariable("health", getHealth());
+		functionBlock.evaluate();
 		
 		Variable risk = functionBlock.getVariable("risk");
-		System.out.println("Risk :"+risk.getLatestDefuzzifiedValue());
-		
-		doMove(dists.get(y).getX(), dists.get(y).getY());
+		return risk.getLatestDefuzzifiedValue();
+
 	}
 	public int highestSpartanDist(List<XYPair> a)
 	{
