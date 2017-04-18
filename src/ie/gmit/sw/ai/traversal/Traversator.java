@@ -1,5 +1,7 @@
 package ie.gmit.sw.ai.traversal;
 
+import java.util.List;
+
 public interface Traversator {
-	public void traverse(Node[][] maze, Node start);
+	public List<Node> traverse(Node[][] maze, Node start);
 }
