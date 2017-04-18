@@ -11,7 +11,7 @@ import ie.gmit.sw.ai.sprites.SpriteType;
 public class GameController {
 	private Maze model;
 	private ScheduledExecutorService god;//I hope blasphemy isn't still illegal here...
-	
+	private SpriteService spriteService;
 	@SuppressWarnings("unused")
 	private GameController() {
 		//require the model at instantiation
@@ -19,6 +19,7 @@ public class GameController {
 
 	public GameController(Maze model) {
 		this.model = model;
+		spriteService = SpriteService.getInstance();
 		god= new ScheduledThreadPoolExecutor(1000);
 		// need to init all the spiders
 		// which need to be runnable
@@ -53,14 +54,16 @@ public class GameController {
 			if (model.get(row, col) == replace) {
 				model.set(row, col, feature);
 				counter++;
-				
+				Moveable m = s.getNewInstance(model, row, col, true);
+				spriteService.addSprite(m);
 				//this creates the spider and gives it to the scheduler, every 2 seconds it calls the spiders run method.
-				god.scheduleAtFixedRate(s.getNewInstance(model, row, col, true), 0, 2, TimeUnit.SECONDS);
+				god.scheduleAtFixedRate(m, 0, 2, TimeUnit.SECONDS);
 			}
 		}
 	}
 	public void placePlayer(int x, int y){
 		Moveable spartan = SpriteType.spartan.getNewInstance(model, x, y, true);
+		spriteService.addSprite(spartan);
 		god.scheduleAtFixedRate(spartan, 0, 2, TimeUnit.SECONDS);
 	}
 }
