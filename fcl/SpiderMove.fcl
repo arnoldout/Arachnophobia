@@ -1,4 +1,4 @@
-FUNCTION_BLOCK MovementSystem
+FUNCTION_BLOCK SpartanSystem
 	VAR_INPUT
 		spartanPos : REAL;
 		health : REAL;
@@ -36,6 +36,99 @@ FUNCTION_BLOCK MovementSystem
 		RULE 2 : IF spartanPos IS visible_threat OR spartanPos IS threat AND health is low THEN risk is high;
 		RULE 3 : IF spartanPos IS visible_threat OR spartanPos IS threat AND health is good THEN risk is low;
 		RULE 4 : IF spartanPos IS visible_threat OR spartanPos IS threat AND health is fine THEN risk is normal;
+	END_RULEBLOCK
+	
+
+END_FUNCTION_BLOCK
+FUNCTION_BLOCK BombSystem
+	VAR_INPUT
+		spartanPosToBomb : REAL;
+		spiderPosToBomb : REAL;
+		health : REAL;
+	END_VAR
+	
+	VAR_OUTPUT
+		aggressiveness : REAL;
+	END_VAR
+	
+	FUZZIFY spartanPosToBomb
+		TERM notClose:= (0,1) (20, 1) (30, 0); 
+		TERM close := (25,0) (40, 1) (60, 0); 
+		TERM extremelyClose := (55, 0) (75, 1) (100, 1);
+	END_FUZZIFY
+	
+	FUZZIFY spiderPosToBomb
+		TERM notClose:= (0,1) (20, 1) (30, 0); 
+		TERM close := (25,0) (40, 1) (60, 0); 
+		TERM extremelyClose := (55, 0) (75, 1) (100, 1);
+	END_FUZZIFY
+	
+	FUZZIFY health
+		TERM low := (0,1) (10,1) (30,0);
+		TERM fine := (20,0) (50,1) (60,0);
+		TERM good := (55,0) (75,1) (100,1);
+	END_FUZZIFY
+	
+	DEFUZZIFY aggressiveness
+		TERM passive := (0, 1) (45, 0);
+		TERM normal := (40,0)(60,1);
+		TERM high := (55, 0) (100, 1);
+		METHOD : COG;
+		DEFAULT := 0; 
+	END_DEFUZZIFY
+	
+	RULEBLOCK No1
+		AND : MIN;
+		ACT : MIN;
+		ACCU : MAX;
+		RULE 1 : IF spartanPosToBomb is close and spiderPosToBomb is extremelyClose and health is fine or health is good THEN aggressiveness is high;
+		RULE 2 : IF spartanPosToBomb is extremelyClose and spiderPosToBomb is close THEN aggressiveness is passive;
+		RULE 3 : IF health is good and spartanPosToBomb is notClose or spartanPosToBomb is close THEN aggressiveness is normal;
+		RULE 4 : IF health is low THEN aggressiveness is passive;
+	END_RULEBLOCK
+	
+
+END_FUNCTION_BLOCK
+
+FUNCTION_BLOCK FriendHeal
+	VAR_INPUT
+		friendDistance : REAL;
+		health : REAL;
+	END_VAR
+	
+	VAR_OUTPUT
+		attraction : REAL;
+	END_VAR
+	
+	FUZZIFY friendDistance
+		TERM notClose:= (0,1) (20, 1) (30, 0); 
+		TERM close := (25,0) (40, 1) (60, 0); 
+		TERM extremelyClose := (55, 0) (75, 1) (100, 1);
+	END_FUZZIFY
+	
+	FUZZIFY health
+		TERM low := (0,1) (10,1) (30,0);
+		TERM fine := (20,0) (50,1) (60,0);
+		TERM good := (55,0) (75,1) (100,1);
+	END_FUZZIFY
+	
+	DEFUZZIFY attraction
+		TERM passive := (0, 1) (45, 0);
+		TERM normal := (40,0)(60,1);
+		TERM high := (55, 0) (100, 1);
+		METHOD : COG;
+		DEFAULT := 0; 
+	END_DEFUZZIFY
+	
+	RULEBLOCK No1
+		AND : MIN;
+		ACT : MIN;
+		ACCU : MAX;
+		RULE 1 : IF friendDistance is close and health is low then attraction is high;
+		RULE 2 : IF friendDistance is extremelyClose and health is low or health is fine then attraction is high;
+		RULE 3 : IF friendDistance is close and health is fine or health is good then attraction is normal;
+		RULE 4 : IF friendDistance is notClose and health is low then attraction is high;
+		RULE 5 : IF friendDistance is notClose and health is fine or health is good then attraction is passive;
 	END_RULEBLOCK
 	
 

@@ -8,10 +8,15 @@ public class GreenSpider extends Spider{
 		super(model, x, y, isAlive, '\u0039');
 		
 	}
-
-	@Override
-	public void run() {
-		moveUp();
+	public DistanceRisk compareRisks(DistanceRisk ...distanceRisks )
+	{
+		DistanceRisk highest = new DistanceRisk(0,0,0);
+		for (int i = 0; i < distanceRisks.length; i++) {
+			if(distanceRisks[i].getRisk()>highest.getRisk()){
+				highest = distanceRisks[i];
+			}
+		}
+		return highest;
 	}
 
 }

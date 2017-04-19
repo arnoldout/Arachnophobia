@@ -277,6 +277,7 @@ public class Spartan extends Moveable {
 	private void getHelp() {
 	}
 
+	//don't call java a piece of shit
 	private void printPOS() {
 		System.out.println(this.getY() + " " + this.getX());
 	}

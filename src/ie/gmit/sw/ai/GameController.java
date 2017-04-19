@@ -12,9 +12,9 @@ import ie.gmit.sw.ai.traversal.Node;
 //maybe rename this... because reasons....
 public class GameController {
 	private Maze model;
+	private ScheduledExecutorService god;//I hope blasphemy isn't still illegal here...
+	private SpriteService spriteService;
 	private static Node[][] traversableMaze;
-	private ScheduledExecutorService god;// I hope blasphemy isn't still illegal
-											// here...
 
 	@SuppressWarnings("unused")
 	private GameController() {
@@ -27,12 +27,15 @@ public class GameController {
 		// still be euclidean distance, since the area is so wide open
 		// this actually still might be viable for later.
 		traversableMaze = MazeNodeConverter.makeTraversable(model);
-		god = new ScheduledThreadPoolExecutor(1000);
+
+		spriteService = SpriteService.getInstance();
+		god= new ScheduledThreadPoolExecutor(1000);
 		// need to init all the spiders
 		// which need to be runnable
 		// then each spider's .run needs to continually do ai science
 		// they need the model too, in order to update their position
 		// so be sure to pass it to them.
+		
 
 		// This block just causes the addFeature to loop through the int value
 		// of the character
@@ -71,16 +74,17 @@ public class GameController {
 			if (model.get(row, col) == replace) {
 				model.set(row, col, feature);
 				counter++;
-
-				// this creates the spider and gives it to the scheduler, every
-				// 2 seconds it calls the spiders run method.
-				god.scheduleAtFixedRate(s.getNewInstance(model, row, col, true), 0, 1, TimeUnit.SECONDS);
+				Moveable m = s.getNewInstance(model, row, col, true);
+				spriteService.addSprite(m);
+				//this creates the spider and gives it to the scheduler, every 2 seconds it calls the spiders run method.
+				god.scheduleAtFixedRate(m, 0, 2, TimeUnit.SECONDS);
 			}
 		}
 	}
 
 	public void placePlayer(int x, int y) {
 		Moveable spartan = SpriteType.spartan.getNewInstance(model, x, y, true);
+		spriteService.addSprite(spartan);
 		god.scheduleAtFixedRate(spartan, 0, 2, TimeUnit.SECONDS);
 	}
 }
