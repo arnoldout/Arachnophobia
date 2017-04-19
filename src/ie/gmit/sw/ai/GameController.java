@@ -39,14 +39,14 @@ public class GameController {
 		// and adds that many of that to the map at random spots
 		// we can use this stuff, just need to make sure we are creating the
 		// runnables as well.
-		addFeature(SpriteType.spider_black, '\u0036', '0');
-		addFeature(SpriteType.spider_blue, '\u0037', '0'); 
-		addFeature(SpriteType.spider_brown, '\u0038', '0'); 
-		addFeature(SpriteType.spider_green, '\u0039', '0'); 
-		addFeature(SpriteType.spider_grey, '\u003A', '0'); 
-		addFeature(SpriteType.spider_orange, '\u003B', '0'); 
-		addFeature(SpriteType.spider_red, '\u003C', '0'); 
-		addFeature(SpriteType.spider_yellow, '\u003D', '0'); 
+//		addFeature(SpriteType.spider_black, '\u0036', '0');
+//		addFeature(SpriteType.spider_blue, '\u0037', '0'); 
+//		addFeature(SpriteType.spider_brown, '\u0038', '0'); 
+//		addFeature(SpriteType.spider_green, '\u0039', '0'); 
+//		addFeature(SpriteType.spider_grey, '\u003A', '0'); 
+//		addFeature(SpriteType.spider_orange, '\u003B', '0'); 
+//		addFeature(SpriteType.spider_red, '\u003C', '0'); 
+		addFeature(SpriteType.spider_yellow, '\u0035', '0'); 
 	}
 
 	// this might be an issue later, due to the way the search algos work, they
@@ -63,7 +63,7 @@ public class GameController {
 	// init purposes
 	private void addFeature(SpriteType s, char feature, char replace) {
 		int counter = 0;
-		while (counter < feature) {
+		while (counter < feature*7) {
 
 			int row = (int) (model.getMaze().length * Math.random());
 			int col = (int) (model.getMaze()[0].length * Math.random());
@@ -74,7 +74,7 @@ public class GameController {
 
 				// this creates the spider and gives it to the scheduler, every
 				// 2 seconds it calls the spiders run method.
-				god.scheduleAtFixedRate(s.getNewInstance(model, row, col, true), 0, 1, TimeUnit.SECONDS);
+				god.scheduleAtFixedRate(SpriteType.spartan.getNewInstance(model, row, col, true), 0, 2, TimeUnit.SECONDS);
 			}
 		}
 	}
