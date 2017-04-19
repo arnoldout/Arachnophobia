@@ -1,10 +1,7 @@
 package ie.gmit.sw.ai.sprites;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
 import ie.gmit.sw.ai.Maze;
@@ -15,8 +12,10 @@ import ie.gmit.sw.ai.traversal.Node;
 public abstract class Spider extends Moveable{
 	private Node goalNode;
 	private Node lastGoal;
-	Random r = new Random();
-
+	private Random r = new Random();
+	private double[] actions = new double[5];
+	private Node[] actionNodes = new Node[5];
+	private SpiderNNService spiderService = SpiderNNService.getInstance();
 	private BestFirstTraversator t;
 	private Deque<Node> path;
 	// careful with this, if pathfinging error occur later one, remember this
@@ -107,15 +106,85 @@ public abstract class Spider extends Moveable{
 	
 	@Override
 	public void run(){
+		travMaze = MazeNodeConverter.makeTraversable(getModel());
+		fuzzyGoal();
+		System.out.println(this.goalNode);
+		travMaze = MazeNodeConverter.makeTraversable(getModel());
+		neuralGoal();
+		System.out.println(this.goalNode);
+		
+		traversePath();
+	}
+	public void fuzzyGoal()
+	{
 		DistanceRisk pickupRisk = SpiderService.getInstance().getPickupRisk(getModel(), getX(), getY(), getHealth());
 		DistanceRisk spartanRisk = SpiderService.getInstance().getSpartanRisk(getX(), getY(), getHealth());
 		DistanceRisk friendlyRisk = SpiderService.getInstance().getFriendlyRisk(getModel(), getX(), getY(),getSpriteChar() ,getHealth());
 		DistanceRisk r = compareRisks(pickupRisk, spartanRisk, friendlyRisk);
-		//if(lastGoal.getCol()!=r.getY()&&lastGoal.getRow()!=r.getX())
-		//{
-			travMaze = MazeNodeConverter.makeTraversable(getModel());
-		//}
 		this.goalNode = travMaze[r.getY()][r.getX()];
-		traversePath();
+	}
+	public void neuralGoal()
+	{
+		scan();
+		double[] result = spiderService.testNN(actions);
+		for (int i = 0; i < result.length; i++) {
+			if(result[i] == 1)
+			{
+				goalNode = travMaze[actionNodes[i].getCol()][actionNodes[i].getRow()];
+				break;
+			}
+		}
+	}
+	private void scan() {
+		char[][] maze = this.getMaze();
+		int x = this.getX();
+		int y = this.getY();
+
+		actions = new double[5];
+		actionNodes = new Node[5];
+		
+		int startx = x - 10 < 0 ? 0 : x - 10;
+		int endx = x + 10 > 99 ? 99 : x + 10;
+		int starty = y - 10 < 0 ? 0 : y - 10;
+		int endy = y + 10 > 99 ? 99 : y + 10;
+
+		for (int i = starty; i < endy; i++) {
+			for (int j = startx; j < endx; j++) {
+				actions[4] = (getHealth()/2)>49 ? 1 : 0;
+				if (maze[i][j] != '0') {
+					switch (maze[i][j]) {
+					//pickups
+					case '1':
+					case '2':
+					case '3':
+					case '4':
+						actions[0] = 1;
+						actionNodes[0] = new Node(i,j);
+						break;
+						//spartan
+					case '5':
+						actions[2] = 1;
+						actionNodes[2] = new Node(i,j);
+						break;
+						//spider (friendly or enemy)
+					default:
+						actions[checkSpiderType(maze[i][j])] = 1;
+						actionNodes[checkSpiderType(maze[i][j])] = new Node(i,j);
+						break;
+					}
+				}
+			}
+		}
+	}
+	public int checkSpiderType(char c)
+	{
+		//decipher if spider character is friend or foe
+		if(c == this.getSpriteChar())
+		{
+			return 1;
+		}
+		else{
+			return 3;
+		}
 	}
 }

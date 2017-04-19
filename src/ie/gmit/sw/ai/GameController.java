@@ -43,13 +43,13 @@ public class GameController {
 		// we can use this stuff, just need to make sure we are creating the
 		// runnables as well.
 		addFeature(SpriteType.spider_black, '\u0036', '0');
-		addFeature(SpriteType.spider_blue, '\u0037', '0'); 
-		addFeature(SpriteType.spider_brown, '\u0038', '0'); 
-		addFeature(SpriteType.spider_green, '\u0039', '0'); 
-		addFeature(SpriteType.spider_grey, '\u003A', '0'); 
-		addFeature(SpriteType.spider_orange, '\u003B', '0'); 
-		addFeature(SpriteType.spider_red, '\u003C', '0'); 
-		addFeature(SpriteType.spider_yellow, '\u003D', '0'); 
+//		addFeature(SpriteType.spider_blue, '\u0037', '0'); 
+//		addFeature(SpriteType.spider_brown, '\u0038', '0'); 
+//		addFeature(SpriteType.spider_green, '\u0039', '0'); 
+//		addFeature(SpriteType.spider_grey, '\u003A', '0'); 
+//		addFeature(SpriteType.spider_orange, '\u003B', '0'); 
+//		addFeature(SpriteType.spider_red, '\u003C', '0'); 
+//		addFeature(SpriteType.spider_yellow, '\u003D', '0'); 
 	}
 
 	// this might be an issue later, due to the way the search algos work, they
