@@ -2,7 +2,6 @@ package ie.gmit.sw.ai.sprites;
 
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Random;
 
 import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.traversal.BestFirstTraversator;
@@ -12,7 +11,6 @@ import ie.gmit.sw.ai.traversal.Node;
 public abstract class Spider extends Moveable{
 	private Node goalNode;
 	private Node lastGoal;
-	private Random r = new Random();
 	private double[] actions = new double[5];
 	private Node[] actionNodes = new Node[5];
 	private SpiderNNService spiderService = SpiderNNService.getInstance();
@@ -28,25 +26,10 @@ public abstract class Spider extends Moveable{
 		path = new LinkedList<Node>();
 
 	}
-	
-	public Node getGoalNode() {
-		return goalNode;
-	}
-
-	public void setGoalNode(Node goalNode) {
-		this.goalNode = goalNode;
-	}
-
-	public Node getLastGoal() {
-		return lastGoal;
-	}
-
-	public void setLastGoal(Node lastGoal) {
-		this.lastGoal = lastGoal;
-	}
 
 	public void traversePath()
 	{
+		//doAttack();
 		// If he has a goal, and if it is different from the last,
 		// he needs to find a path.
 		// first set the new goal node as the goal and set the last goal to
@@ -106,12 +89,14 @@ public abstract class Spider extends Moveable{
 	
 	@Override
 	public void run(){
+		
+		//need refactoring out into interface or enum
 		travMaze = MazeNodeConverter.makeTraversable(getModel());
 		fuzzyGoal();
-		System.out.println(this.goalNode);
-		travMaze = MazeNodeConverter.makeTraversable(getModel());
-		neuralGoal();
-		System.out.println(this.goalNode);
+		//System.out.println(this.goalNode);
+		//travMaze = MazeNodeConverter.makeTraversable(getModel());
+		//neuralGoal();
+		//System.out.println(this.goalNode);
 		
 		traversePath();
 	}
@@ -187,4 +172,21 @@ public abstract class Spider extends Moveable{
 			return 3;
 		}
 	}
+	
+	public Node getGoalNode() {
+		return goalNode;
+	}
+
+	public void setGoalNode(Node goalNode) {
+		this.goalNode = goalNode;
+	}
+
+	public Node getLastGoal() {
+		return lastGoal;
+	}
+
+	public void setLastGoal(Node lastGoal) {
+		this.lastGoal = lastGoal;
+	}
+
 }

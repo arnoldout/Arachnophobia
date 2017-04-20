@@ -77,5 +77,5 @@ public class SpiderNNService {
 			e.printStackTrace();
 		}
 		return new double[5];
-	}	
+	}
 }
