@@ -114,24 +114,24 @@ public class Spartan extends Moveable {
 		// maybe move to a better code structure for this if we get around to it
 		switch (resultsIndx) {
 		case 0:
-			System.out.println("going for the sword@" + swrdNearby);
+			//System.out.println("going for the sword@" + swrdNearby);
 			goalNode = travMaze[decodeYPos(swrdNearby)][decodeXPos(swrdNearby)];
 			break;
 		case 1:
-			System.out.println("going for the help@" + hlpNearby);
+			//System.out.println("going for the help@" + hlpNearby);
 			goalNode = travMaze[decodeYPos(hlpNearby)][decodeXPos(hlpNearby)];
 			break;
 		case 2:
-			System.out.println("going for the bomb@" + bmbNearby);
+			//System.out.println("going for the bomb@" + bmbNearby);
 			goalNode = travMaze[decodeYPos(bmbNearby)][decodeXPos(bmbNearby)];
 			break;
 		case 3:
-			System.out.println("going for the hbomb" + hbmbNearby);
+			//System.out.println("going for the hbomb" + hbmbNearby);
 			goalNode = travMaze[decodeYPos(hbmbNearby)][decodeXPos(hbmbNearby)];
 			break;
 		case 4:
 			goalNode = null;
-			System.out.println("wandering");
+			//System.out.println("wandering");
 			break;
 		default:
 			break;
@@ -150,7 +150,7 @@ public class Spartan extends Moveable {
 				t = new BestFirstTraversator(goalNode);
 				goalNode.setGoalNode(true);
 
-				System.out.println("goal nodes" + lastGoal + " " + goalNode);
+				//System.out.println("goal nodes" + lastGoal + " " + goalNode);
 				if (goalNode != null) {
 					if (lastGoal != null)
 						lastGoal.setGoalNode(false);
@@ -159,7 +159,7 @@ public class Spartan extends Moveable {
 				}
 				try {
 					path = new LinkedList<Node>((t.traverse(travMaze, travMaze[this.getRow()][this.getCol()])));
-					System.out.println("have path: " + path);
+				//	System.out.println("have path: " + path);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -195,7 +195,7 @@ public class Spartan extends Moveable {
 		else {
 			if (lastGoal != null)
 				lastGoal = null;
-			System.out.println("deciding where to wander");
+			//System.out.println("deciding where to wander");
 			int pos = getWanderPos();
 			if (isValidMove(decodeYPos(pos), decodeXPos(pos))) {
 				doMove(decodeYPos(pos), decodeXPos(pos));

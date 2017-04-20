@@ -17,7 +17,7 @@ public abstract class Moveable implements Runnable{
 	private int health;
 	private int attackLevel;
 	private AtomicBoolean isAlive;
-
+	private Node lastVisited;
 	public Moveable(String id,Maze model, int row, int col, boolean isAlive, char spriteChar, int attackLevel) {
 		super();
 		this.id = id;
@@ -29,6 +29,7 @@ public abstract class Moveable implements Runnable{
 		this.health = 100;
 		this.attackLevel = attackLevel;
 		this.model.set(row, col, spriteChar);
+		this.lastVisited = new Node(row, col);
 	}
 
 	public void takeDamage(int damage)
@@ -56,15 +57,15 @@ public abstract class Moveable implements Runnable{
 
 		for (int i = starty; i <= endy; i++) {
 			for (int j = startx; j <= endx; j++) {
-				if(this.getMaze()[i][j] != ' '||this.getMaze()[i][j] != '0'||this.getMaze()[i][j] != '1'||this.getMaze()[i][j] != '2'||this.getMaze()[i][j] != '3'||this.getMaze()[i][j] != '4'||this.getMaze()[i][j] != this.getSpriteChar())
+				if(this.getMaze()[i][j] != ' '&&this.getMaze()[i][j] != '0'&&this.getMaze()[i][j] != '1'&&this.getMaze()[i][j] != '2'
+						&&this.getMaze()[i][j] != '3'&&this.getMaze()[i][j] != '4'&&this.getMaze()[i][j] != this.getSpriteChar())
 				{
 					try{
-						
-//						Moveable m = SpriteService.getInstance().findSprite(i, j);
-//						if(m.isAlive())
-//							m.takeDamage(this.attackLevel);
-						SpriteService.getInstance().getSprite(0).takeDamage(this.attackLevel);
-						break;
+						Moveable m = SpriteService.getInstance().findSprite(i, j);
+						if(m.isAlive()){
+							m.takeDamage(this.attackLevel);
+							break;
+						}
 					}
 					catch(NullPointerException e)
 					{
@@ -75,6 +76,14 @@ public abstract class Moveable implements Runnable{
 			}
 		}
 	}
+	public Node getLastVisited() {
+		return lastVisited;
+	}
+
+	public void setLastVisited(Node lastVisited) {
+		this.lastVisited = lastVisited;
+	}
+
 	public int getAttackLevel() {
 		return attackLevel;
 	}
@@ -114,11 +123,9 @@ public abstract class Moveable implements Runnable{
 			double angle = Math.random()*Math.PI*2;
 			double x = Math.cos(angle)*radius;
 			double y = Math.sin(angle)*radius;
-			System.out.println(x+"***"+y);
 			try{
 				if(isValidMove((int)x, (int)y))
 				{
-					System.out.println((int)x+"***"+(int)y);
 					n = new Node((int)x, (int)y);
 					foundValidNode = true;
 				}
@@ -137,9 +144,10 @@ public abstract class Moveable implements Runnable{
 				col <= model.size() - 1 && col > 0 &&
 				model.get(row, col) == ' '){
 			model.set(this.row, this.col, blank);
+			this.lastVisited = new Node(this.row, this.col);
 			this.row=row;
 			this.col=col;
-			model.set(row, col, spriteChar);
+			model.set(row, col, spriteChar);			
 		}
 	}
 	public int getCol() {

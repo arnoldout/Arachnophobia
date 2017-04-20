@@ -46,7 +46,7 @@ public class GameController {
 		// we can use this stuff, just need to make sure we are creating the
 		// runnables as well.
 		addFeature(SpriteType.spider_black, '\u0036', '0');
-		addFeature(SpriteType.spider_blue, '\u0037', '0'); 
+	//	addFeature(SpriteType.spider_blue, '\u0037', '0'); 
 //		addFeature(SpriteType.spider_brown, '\u0038', '0'); 
 //		addFeature(SpriteType.spider_green, '\u0039', '0'); 
 //		addFeature(SpriteType.spider_grey, '\u003A', '0'); 
@@ -70,7 +70,7 @@ public class GameController {
 	@SuppressWarnings("unchecked")
 	private void addFeature(SpriteType s, char feature, char replace) {
 		int counter = 0;
-		while (counter < feature) {
+		while (counter < 1) {
 
 			int row = (int) (model.getMaze().length * Math.random());
 			int col = (int) (model.getMaze()[0].length * Math.random());

@@ -1,14 +1,13 @@
 package ie.gmit.sw.ai;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-import ie.gmit.sw.ai.sprites.SpriteType;
-import ie.gmit.sw.ai.traversal.MazeNodeConverter;
-import ie.gmit.sw.ai.traversal.Node;
+import javax.swing.JFrame;
 public class GameRunner implements KeyListener{
-	private static final int MAZE_DIMENSION = 50;
+	private static final int MAZE_DIMENSION = 100;
 	private static final int IMAGE_COUNT = 14;
 	private GameView view;
 	private Maze model;

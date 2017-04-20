@@ -4,6 +4,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 import ie.gmit.sw.ai.Maze;
+import ie.gmit.sw.ai.nn.Utils;
 import ie.gmit.sw.ai.traversal.BestFirstTraversator;
 import ie.gmit.sw.ai.traversal.MazeNodeConverter;
 import ie.gmit.sw.ai.traversal.Node;
@@ -11,7 +12,6 @@ import ie.gmit.sw.ai.traversal.Node;
 public abstract class Spider extends Moveable{
 	private Node goalNode;
 	private Node lastGoal;
-	int counter = 0;
 	private double[] actions = new double[5];
 	private Node[] actionNodes = new Node[5];
 	private SpiderNNService spiderService = SpiderNNService.getInstance();
@@ -30,13 +30,7 @@ public abstract class Spider extends Moveable{
 
 	public void traversePath()
 	{
-		if(counter>5)
-		{
-			takeDamage(100);
-			return;
-		}
-		counter++;
-		//attackScan();
+		attackScan();
 		
 		// If he has a goal, and if it is different from the last,
 		// he needs to find a path.
@@ -51,7 +45,7 @@ public abstract class Spider extends Moveable{
 				t = new BestFirstTraversator(goalNode);
 				goalNode.setGoalNode(true);
 
-				System.out.println("goal nodes" + lastGoal + " " + goalNode);
+				//System.out.println("goal nodes" + lastGoal + " " + goalNode);
 				if (goalNode != null) {
 					if (lastGoal != null)
 						lastGoal.setGoalNode(false);
@@ -60,7 +54,7 @@ public abstract class Spider extends Moveable{
 				}
 				try {
 					path = new LinkedList<Node>((t.traverse(travMaze, travMaze[this.getRow()][this.getCol()])));
-					System.out.println("have path: " + path);
+					//System.out.println("have path: " + path);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -87,7 +81,7 @@ public abstract class Spider extends Moveable{
 		else {
 			if (lastGoal != null)
 				lastGoal = null;
-			System.out.println("deciding where to wander");
+			//System.out.println("deciding where to wander");
 			goalNode = getRandomCirclePoint(7);
 			traversePath();			
 		}
@@ -122,13 +116,20 @@ public abstract class Spider extends Moveable{
 	public void neuralGoal()
 	{
 		scan();
-		double[] result = spiderService.testNN(actions);
-		for (int i = 0; i < result.length; i++) {
-			if(result[i] == 1)
-			{
-				goalNode = travMaze[actionNodes[i].getCol()][actionNodes[i].getRow()];
-				break;
+		if(spiderService!=null)
+		{
+			double[] result = spiderService.process(actions);
+			int resultsIndx = Utils.getMaxIndex(result);
+			try{
+				goalNode = travMaze[actionNodes[resultsIndx].getRow()][actionNodes[resultsIndx].getCol()];
 			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		else{
+			goalNode = travMaze[actionNodes[4].getRow()][actionNodes[4].getCol()];
 		}
 	}
 	private void scan() {
@@ -147,6 +148,7 @@ public abstract class Spider extends Moveable{
 		for (int i = starty; i < endy; i++) {
 			for (int j = startx; j < endx; j++) {
 				actions[4] = (getHealth()/2)>49 ? 1 : 0;
+				actionNodes[4] = getRandomCirclePoint(10);
 				if (maze[i][j] != '0') {
 					switch (maze[i][j]) {
 					//pickups

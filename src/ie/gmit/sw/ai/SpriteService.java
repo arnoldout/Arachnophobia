@@ -29,11 +29,8 @@ public class SpriteService {
 	}
 	public void killSprite(String id)
 	{
-
-		
 		if(set.get(id).cancel(false))
 			set.remove(id);
-
 	}
 	
 	public ScheduledFuture<Double> putFuture(String arg0, ScheduledFuture<Double> arg1) {
@@ -53,7 +50,7 @@ public class SpriteService {
 	public Moveable findSprite(int x, int y)
 	{
 		for (int i = 0; i < sprites.size(); i++) {
-			if(sprites.get(i).getCol() == x && sprites.get(i).getRow() == y)
+			if((sprites.get(i).getCol() == x && sprites.get(i).getRow() == y)||(sprites.get(i).getLastVisited().getCol() == x && sprites.get(i).getLastVisited().getRow() == y))
 			{
 				return sprites.get(i);
 			}
