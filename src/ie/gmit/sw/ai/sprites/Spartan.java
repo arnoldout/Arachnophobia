@@ -3,31 +3,26 @@ package ie.gmit.sw.ai.sprites;
 import java.util.Deque;
 import java.util.LinkedList;
 
-import ie.gmit.sw.ai.GameController;
 import ie.gmit.sw.ai.Maze;
-import ie.gmit.sw.ai.nn.BackpropagationTrainer;
+import ie.gmit.sw.ai.NeuralNetworkService;
 import ie.gmit.sw.ai.nn.NeuralNetwork;
-import ie.gmit.sw.ai.nn.Trainator;
 import ie.gmit.sw.ai.nn.Utils;
-import ie.gmit.sw.ai.nn.activator.Activator.ActivationFunction;
-import ie.gmit.sw.ai.traversal.BestFirstTraversator;
-import ie.gmit.sw.ai.traversal.MazeNodeConverter;
-import ie.gmit.sw.ai.traversal.Node;
-import ie.gmit.sw.ai.traversal.Node.Direction;
+import ie.gmit.sw.ai.traversal.BestFirstCharSearch;
+import ie.gmit.sw.ai.traversal.Coord;
 
 public class Spartan extends Moveable {
 	// move this guy out of here, maybe. it's okay to leave one in the spartan
 	// maybe, theres just one of him
-	private NeuralNetwork testeroo;
+	private NeuralNetwork nn;
 	// *********************************************************************
 	// If reworking algorithms works, make this a traversator again
 	// I was just playing with them and got tired of changing the interface
 	// whenever i wanted to try another algorithm
-	private BestFirstTraversator t;
+	private BestFirstCharSearch t;
 	// ********************************************************************
-	private Node goalNode;
-	private Node lastGoal;
-	private Deque<Node> path;
+	private int goalNode;
+	private int lastGoal;
+	private Deque<Coord> path;
 
 	// these are temporary, do the comments above the scan method later and
 	// these should change
@@ -39,58 +34,14 @@ public class Spartan extends Moveable {
 	private double[] inputs = new double[5];
 	// careful with this, if pathfinging error occur later one, remember this
 	// could be an issue with goal nodes
-	private Node[][] travMaze = MazeNodeConverter.makeTraversable(getModel());
+
 
 	public Spartan(String id, Maze model, int col, int row, boolean isAlive) {
 		super(id, model, col, row, isAlive, '\u0035', 100);
+		nn = NeuralNetworkService.getInstance().getSpartanNeuralNetwork();
+		goalNode = lastGoal = 0;
 
-		path = new LinkedList<Node>();
-
-		goalNode = lastGoal = null;
-
-		// ************************************************************************
-		// start off training a NN for now, then move elsewhere later
-		// pass in nearby treasure
-		// need to pass in enemies later
-		double[][] trainingData = { { 1, 0, 0, 0, 0 }, // only a sword nearby
-				{ 0, 1, 0, 0, 0 }, // only help nearby, doesnt have a map
-				{ 0, 1, 0, 0, 1 }, // help nearby, already has a map
-				{ 0, 0, 1, 0, 0 }, // bomb nearby
-				{ 0, 0, 0, 1, 0 }, // hmb nearby
-				{ 1, 1, 0, 0, 0 }, // sword and help nearby, has no map
-				{ 1, 0, 1, 0, 0 }, //
-				{ 0, 1, 0, 1, 0 }, // no map
-				{ 0, 1, 1, 0, 0 }, // help and bomb, nearby no map
-				{ 0, 1, 1, 0, 1 }, // help nearby has map
-				{ 0, 1, 0, 1, 0 }, // no map
-				{ 0, 0, 1, 1, 0 }, //// bomb and hbomb nearby
-				{ 0, 0, 0, 1, 0 }, // hbomb nearby
-				{ 1, 1, 1, 1, 0 }, // all nearby, but no map
-				{ 0, 0, 0, 0, 0 }// nothing in sight, wander around like a
-									// tourist
-		};
-		// {getsword, gethlp, getbmb, gethmb, wander}
-		double[][] expected = { { 1, 0, 0, 0, 0 }, // only a sword nearby
-				{ 0, 1, 0, 0, 0 }, // only help nearby, doesnt have a map
-				{ 0, 0, 0, 0, 1 }, // help nearby, already has a map
-				{ 0, 0, 1, 0, 0 }, // bomb nearby
-				{ 0, 0, 0, 1, 0 }, // hmb nearby
-				{ 0, 1, 0, 0, 0 }, // sword and help nearby, has no map
-				{ 1, 0, 0, 0, 0 }, // sword and bomb nearby
-				{ 0, 0, 0, 0, 1 }, // no map
-				{ 0, 1, 0, 0, 0 }, // help and bomb, nearby no map
-				{ 0, 0, 0, 0, 1 }, // help nearby has map
-				{ 0, 1, 0, 0, 0 }, // no map
-				{ 0, 0, 0, 1, 0 }, //// bomb and hbomb nearby
-				{ 0, 0, 0, 1, 0 }, // hbomb nearby
-				{ 0, 1, 0, 0, 0 }, // all nearby, but no map
-				{ 0, 0, 0, 0, 1 } };
-
-		testeroo = new NeuralNetwork(ActivationFunction.HyperbolicTangent, inputs.length, 6, inputs.length);
-		Trainator t = new BackpropagationTrainer(testeroo);
-		t.train(trainingData, expected, .01, 10000);
-		// training complete
-		// ***************************************************************************
+		
 	}
 
 	@Override
@@ -103,7 +54,7 @@ public class Spartan extends Moveable {
 		inputs[3] = hbmbNearby > 0 ? 1 : 0;
 		inputs[4] = hasmap;
 		try {
-			actions = testeroo.process(inputs);
+			actions = nn.process(inputs);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -114,24 +65,24 @@ public class Spartan extends Moveable {
 		// maybe move to a better code structure for this if we get around to it
 		switch (resultsIndx) {
 		case 0:
-			//System.out.println("going for the sword@" + swrdNearby);
-			goalNode = travMaze[decodeYPos(swrdNearby)][decodeXPos(swrdNearby)];
+//			System.out.println("going for the sword@" + swrdNearby);
+			goalNode = swrdNearby;
 			break;
 		case 1:
-			//System.out.println("going for the help@" + hlpNearby);
-			goalNode = travMaze[decodeYPos(hlpNearby)][decodeXPos(hlpNearby)];
+//			System.out.println("going for the help@" + hlpNearby);
+			goalNode = hlpNearby;
 			break;
 		case 2:
-			//System.out.println("going for the bomb@" + bmbNearby);
-			goalNode = travMaze[decodeYPos(bmbNearby)][decodeXPos(bmbNearby)];
+//			System.out.println("going for the bomb@" + bmbNearby);
+			goalNode = bmbNearby;
 			break;
 		case 3:
-			//System.out.println("going for the hbomb" + hbmbNearby);
-			goalNode = travMaze[decodeYPos(hbmbNearby)][decodeXPos(hbmbNearby)];
+//			System.out.println("going for the hbomb" + hbmbNearby);
+			goalNode = hbmbNearby;
 			break;
 		case 4:
-			goalNode = null;
-			//System.out.println("wandering");
+			goalNode = 0;
+//			System.out.println("wandering");
 			break;
 		default:
 			break;
@@ -144,35 +95,31 @@ public class Spartan extends Moveable {
 		// process
 		// If he hasnt changed his mind on where to go, just continue on the
 		// path he already set out
-		if (goalNode != null) {
+		if (goalNode != 0) {
 
-			if (lastGoal == null || !lastGoal.equals(goalNode)) {
-				t = new BestFirstTraversator(goalNode);
-				goalNode.setGoalNode(true);
+			if (lastGoal == 0 || lastGoal!=goalNode) {
+				t = new BestFirstCharSearch(this.getMaze());
+				
 
-				//System.out.println("goal nodes" + lastGoal + " " + goalNode);
-				if (goalNode != null) {
-					if (lastGoal != null)
-						lastGoal.setGoalNode(false);
-					goalNode.setGoalNode(true);
+//				System.out.println("goal nodes" + lastGoal + " " + goalNode);
+				if (goalNode != 0) {
 					lastGoal = goalNode;
 				}
 				try {
-					path = new LinkedList<Node>((t.traverse(travMaze, travMaze[this.getRow()][this.getCol()])));
-				//	System.out.println("have path: " + path);
+					Coord start = new Coord(this.getRow(), this.getCol());
+					Coord end= new Coord(decodeYPos(goalNode), decodeXPos(goalNode));
+					path = new LinkedList<Coord>((t.traverse(start, end)));
+
+//					System.out.println("have path: " + path);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				if (!path.isEmpty()) {
-					path.poll();// the last one is the one he's
-								// already on
-				}
-				goalNode.setGoalNode(false);
 			}
 
 			if (!path.isEmpty()) {
-				Node n = path.peek();
-
+				
+				Coord n = path.peek();
+//				System.out.println(n);
 				if (isValidMove(n.getRow(), n.getCol())) {
 					n = path.poll();
 					doMove(n.getRow(), n.getCol());
@@ -184,6 +131,13 @@ public class Spartan extends Moveable {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
+					
+					else{
+						Coord start = new Coord(this.getRow(), this.getCol());
+						Coord end= new Coord(decodeYPos(goalNode), decodeXPos(goalNode));
+//						System.out.println("tried going to " +n.getRow() + n.getCol());
+						path = new LinkedList<Coord>((t.traverse(start, end)));
+					}
 
 				}
 			}
@@ -193,14 +147,15 @@ public class Spartan extends Moveable {
 		// make sure to set the last goal to null just in case he reached his
 		// last goal or something
 		else {
-			if (lastGoal != null)
-				lastGoal = null;
-			//System.out.println("deciding where to wander");
+
+			if (lastGoal != 0)
+				lastGoal = 0;
+//			System.out.println("deciding where to wander");
 			int pos = getWanderPos();
 			if (isValidMove(decodeYPos(pos), decodeXPos(pos))) {
 				doMove(decodeYPos(pos), decodeXPos(pos));
-			} else
-				System.out.println("Cant wander there");
+			} //else
+//				System.out.println("Cant wander there");
 		}
 	}
 
@@ -211,26 +166,6 @@ public class Spartan extends Moveable {
 		char target = this.getMaze()[row][col];
 		if (target < '5' && target > '0') {
 			this.getModel().set(row, col, '0');
-
-			// get rid of these ifs, just to test a bug fix for now
-			if (row < this.getRow() && col == this.getCol()) {// loot is above
-				this.travMaze[this.getRow()][this.getCol()].removePath(Direction.North);
-				this.travMaze[row][col].removePath(Direction.South);
-			} else if (row > this.getRow() && col == this.getCol())// loot is
-																	// below
-			{
-				this.travMaze[this.getRow()][this.getCol()].removePath(Direction.South);
-				this.travMaze[row][col].removePath(Direction.North);
-			}
-			if (row == this.getRow() && col < this.getCol()) {// loot is left
-				this.travMaze[this.getRow()][this.getCol()].removePath(Direction.West);
-				this.travMaze[row][col].removePath(Direction.East);
-			} else if (row == this.getRow() && col > this.getCol())// loot is
-																	// right
-			{
-				this.travMaze[this.getRow()][this.getCol()].removePath(Direction.East);
-				this.travMaze[row][col].removePath(Direction.West);
-			}
 			return true;
 		}
 		return false;
@@ -277,7 +212,6 @@ public class Spartan extends Moveable {
 	private void getHelp() {
 	}
 
-	//don't call java a piece of shit
 	private void printPOS() {
 		System.out.println(this.getRow() + " " + this.getCol());
 	}

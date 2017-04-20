@@ -1,22 +1,18 @@
 package ie.gmit.sw.ai;
 
 import java.util.UUID;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import ie.gmit.sw.ai.sprites.Moveable;
 import ie.gmit.sw.ai.sprites.SpriteType;
-import ie.gmit.sw.ai.traversal.MazeNodeConverter;
-import ie.gmit.sw.ai.traversal.Node;
 
 //maybe rename this... because reasons....
 public class GameController {
 	private Maze model;
 	private ScheduledThreadPoolExecutor god;//I hope blasphemy isn't still illegal here...
 	private SpriteService spriteService;
-	private static Node[][] traversableMaze;
 
 	@SuppressWarnings("unused")
 	private GameController() {
@@ -25,10 +21,6 @@ public class GameController {
 
 	public GameController(Maze model) {
 		this.model = model;
-		// not sure if this works just yet, but it's there. Heuristics should
-		// still be euclidean distance, since the area is so wide open
-		// this actually still might be viable for later.
-		traversableMaze = MazeNodeConverter.makeTraversable(model);
 
 		spriteService = SpriteService.getInstance();
 		god= new ScheduledThreadPoolExecutor(1000);
@@ -45,23 +37,21 @@ public class GameController {
 		// and adds that many of that to the map at random spots
 		// we can use this stuff, just need to make sure we are creating the
 		// runnables as well.
+
 		addFeature(SpriteType.spider_black, '\u0036', '0');
-	//	addFeature(SpriteType.spider_blue, '\u0037', '0'); 
-//		addFeature(SpriteType.spider_brown, '\u0038', '0'); 
-//		addFeature(SpriteType.spider_green, '\u0039', '0'); 
-//		addFeature(SpriteType.spider_grey, '\u003A', '0'); 
-//		addFeature(SpriteType.spider_orange, '\u003B', '0'); 
-//		addFeature(SpriteType.spider_red, '\u003C', '0'); 
-//		addFeature(SpriteType.spider_yellow, '\u003D', '0'); 
+		addFeature(SpriteType.spider_blue, '\u0037', '0'); 
+		addFeature(SpriteType.spider_brown, '\u0038', '0'); 
+		addFeature(SpriteType.spider_green, '\u0039', '0'); 
+		addFeature(SpriteType.spider_grey, '\u003A', '0'); 
+		addFeature(SpriteType.spider_orange, '\u003B', '0'); 
+		addFeature(SpriteType.spider_red, '\u003C', '0'); 
+		addFeature(SpriteType.spider_yellow, '\u003D', '0');
 	}
 
 	// this might be an issue later, due to the way the search algos work, they
 	// set a boolean in the node to true when it is the goal node.
 	// so having one master node array wont work without us rewriting the
 	// algorithm to take in a goal nodes pos@traversal
-	public static Node[][] getNodes() {
-		return traversableMaze.clone();
-	}
 
 	// just plops the character representation of whatever the 'thing' is at
 	// it's position.
@@ -70,7 +60,7 @@ public class GameController {
 	@SuppressWarnings("unchecked")
 	private void addFeature(SpriteType s, char feature, char replace) {
 		int counter = 0;
-		while (counter < 1) {
+		while (counter < feature) {
 
 			int row = (int) (model.getMaze().length * Math.random());
 			int col = (int) (model.getMaze()[0].length * Math.random());

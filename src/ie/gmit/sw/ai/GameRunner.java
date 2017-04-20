@@ -11,8 +11,6 @@ public class GameRunner implements KeyListener{
 	private static final int IMAGE_COUNT = 14;
 	private GameView view;
 	private Maze model;
-
-	@SuppressWarnings("unused")
 	private GameController controller;
 	private int currentRow;
 	private int currentCol;

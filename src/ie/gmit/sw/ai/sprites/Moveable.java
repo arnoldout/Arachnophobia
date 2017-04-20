@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.SpriteService;
-import ie.gmit.sw.ai.traversal.Node;
+import ie.gmit.sw.ai.traversal.Coord;
 
 public abstract class Moveable implements Runnable{
 	private String id;
@@ -17,7 +17,7 @@ public abstract class Moveable implements Runnable{
 	private int health;
 	private int attackLevel;
 	private AtomicBoolean isAlive;
-	private Node lastVisited;
+	private Coord lastVisited;
 	public Moveable(String id,Maze model, int row, int col, boolean isAlive, char spriteChar, int attackLevel) {
 		super();
 		this.id = id;
@@ -29,7 +29,15 @@ public abstract class Moveable implements Runnable{
 		this.health = 100;
 		this.attackLevel = attackLevel;
 		this.model.set(row, col, spriteChar);
-		this.lastVisited = new Node(row, col);
+		this.lastVisited = new Coord(row, col);
+	}
+
+	public Coord getLastVisited() {
+		return lastVisited;
+	}
+
+	public void setLastVisited(Coord lastVisited) {
+		this.lastVisited = lastVisited;
 	}
 
 	public void takeDamage(int damage)
@@ -69,19 +77,11 @@ public abstract class Moveable implements Runnable{
 					}
 					catch(NullPointerException e)
 					{
-						//sprite not found
-						e.printStackTrace();
+						//no sprite found
 					}
 				}
 			}
 		}
-	}
-	public Node getLastVisited() {
-		return lastVisited;
-	}
-
-	public void setLastVisited(Node lastVisited) {
-		this.lastVisited = lastVisited;
 	}
 
 	public int getAttackLevel() {
@@ -114,19 +114,21 @@ public abstract class Moveable implements Runnable{
 			return false; //Can't move
 		}
 	}
-	public Node getRandomCirclePoint(int radius)
+	public Coord getRandomCirclePoint(int radius)
 	{
 		boolean foundValidNode = false;
-		Node n = null;
+		Coord n = null;
 		while(!foundValidNode)
 		{
 			double angle = Math.random()*Math.PI*2;
 			double x = Math.cos(angle)*radius;
 			double y = Math.sin(angle)*radius;
+//			System.out.println(x+"***"+y);
 			try{
 				if(isValidMove((int)x, (int)y))
 				{
-					n = new Node((int)x, (int)y);
+//					System.out.println((int)x+"***"+(int)y);
+					n = new Coord((int)x, (int)y);
 					foundValidNode = true;
 				}
 			}
@@ -144,7 +146,7 @@ public abstract class Moveable implements Runnable{
 				col <= model.size() - 1 && col > 0 &&
 				model.get(row, col) == ' '){
 			model.set(this.row, this.col, blank);
-			this.lastVisited = new Node(this.row, this.col);
+			this.lastVisited = new Coord(this.row, this.col);
 			this.row=row;
 			this.col=col;
 			model.set(row, col, spriteChar);			
