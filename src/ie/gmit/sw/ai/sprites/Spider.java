@@ -83,6 +83,7 @@ public abstract class Spider extends Moveable {
 		{
 			attackScan();
 		}
+		roundCounter++;
 	}
 
 	// each spider can decide which risks they would rather take

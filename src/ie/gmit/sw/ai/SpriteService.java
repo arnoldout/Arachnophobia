@@ -1,11 +1,11 @@
 package ie.gmit.sw.ai;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 
 import ie.gmit.sw.ai.sprites.Moveable;
 
@@ -58,8 +58,10 @@ public class SpriteService {
 	{
 		Integer lowestPos = null;
 		double lowestDist = 1000000;
-		
-		for (int i = 0; i < sprites.size(); i++) {
+		System.out.println("Sprites Size :"+sprites.size());
+		List<Moveable> l = sprites.stream().filter(sp -> sp.getSpriteChar()==charType).collect(Collectors.toList());
+		System.out.println("L Size : "+l.size());
+		for (int i = 0; i < l.size(); i++) {
 			if(sprites.get(i).getSpriteChar()!=charType){
 				double dist = euclideanDistance(sprites.get(i).getRow(),sprites.get(i).getCol(),row,col);
 				if(lowestPos==null)
@@ -69,11 +71,17 @@ public class SpriteService {
 				if(dist<lowestDist)
 				{
 					lowestDist = dist;
-					lowestPos = i;
+					lowestPos = new Integer(i);
 				}
 			}
 		}
-		return sprites.get(lowestPos);
+		try{
+			return l.get(lowestPos);
+		}
+		catch(NullPointerException e)
+		{
+			return null;
+		}
 	}
 
 	public double euclideanDistance(int x1, int y1, int x2, int y2) {
