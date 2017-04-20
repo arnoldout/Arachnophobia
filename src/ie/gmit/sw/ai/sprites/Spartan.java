@@ -41,8 +41,8 @@ public class Spartan extends Moveable {
 	// could be an issue with goal nodes
 	private Node[][] travMaze = MazeNodeConverter.makeTraversable(getModel());
 
-	public Spartan(Maze model, int x, int y, boolean isAlive) {
-		super(model, x, y, isAlive, '\u0035');
+	public Spartan(String id, Maze model, int x, int y, boolean isAlive) {
+		super(id, model, x, y, isAlive, '\u0035', 100);
 
 		path = new LinkedList<Node>();
 

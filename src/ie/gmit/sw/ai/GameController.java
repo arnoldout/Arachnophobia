@@ -1,6 +1,8 @@
 package ie.gmit.sw.ai;
 
+import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -64,6 +66,7 @@ public class GameController {
 	// it's position.
 	// the spiders will be updating their position themselves, this is just for
 	// init purposes
+	@SuppressWarnings("unchecked")
 	private void addFeature(SpriteType s, char feature, char replace) {
 		int counter = 0;
 		while (counter < feature) {
@@ -74,17 +77,20 @@ public class GameController {
 			if (model.get(row, col) == replace) {
 				model.set(row, col, feature);
 				counter++;
-				Moveable m = s.getNewInstance(model, row, col, true);
+				String uniqueID = UUID.randomUUID().toString();
+				Moveable m = s.getNewInstance(uniqueID,model, row, col, true);
 				spriteService.addSprite(m);
 				//this creates the spider and gives it to the scheduler, every 2 seconds it calls the spiders run method.
-				god.scheduleAtFixedRate(m, 0, 2, TimeUnit.SECONDS);
+				spriteService.putFuture(uniqueID,(ScheduledFuture<Double>) god.scheduleAtFixedRate(m, 0, 2, TimeUnit.SECONDS));
 			}
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void placePlayer(int x, int y) {
-		Moveable spartan = SpriteType.spartan.getNewInstance(model, x, y, true);
+		String uniqueID = UUID.randomUUID().toString();
+		Moveable spartan = SpriteType.spartan.getNewInstance(uniqueID,model, x, y, true);
 		spriteService.addSprite(spartan);
-		god.scheduleAtFixedRate(spartan, 0, 2, TimeUnit.SECONDS);
+		spriteService.putFuture(uniqueID,(ScheduledFuture<Double>) god.scheduleAtFixedRate(spartan, 0, 2, TimeUnit.SECONDS));
 	}
 }

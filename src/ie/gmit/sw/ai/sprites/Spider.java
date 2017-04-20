@@ -19,17 +19,19 @@ public abstract class Spider extends Moveable{
 	// careful with this, if pathfinging error occur later one, remember this
 	// could be an issue with goal nodes
 	private Node[][] travMaze = MazeNodeConverter.makeTraversable(getModel());
-	public Spider(Maze model, int x, int y, boolean isAlive, char spriteChar) {
-		super(model, x, y, isAlive, spriteChar);
-		setHealth(100);
+	public Spider(String id, Maze model, int x, int y, boolean isAlive, char spriteChar) {
+		super(id, model, x, y, isAlive, spriteChar, 50);
 		goalNode = lastGoal = null;
 		path = new LinkedList<Node>();
 
 	}
 
+
 	public void traversePath()
 	{
-		//doAttack();
+		
+		attackScan();
+		
 		// If he has a goal, and if it is different from the last,
 		// he needs to find a path.
 		// first set the new goal node as the goal and set the last goal to
