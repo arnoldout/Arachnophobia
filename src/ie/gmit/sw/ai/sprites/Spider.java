@@ -3,6 +3,8 @@ package ie.gmit.sw.ai.sprites;
 import java.util.Deque;
 import java.util.LinkedList;
 
+import org.jfree.ui.action.DowngradeActionMap;
+
 import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.nn.Utils;
 import ie.gmit.sw.ai.traversal.BestFirstCharSearch;
@@ -20,7 +22,7 @@ public abstract class Spider extends Moveable {
 	private int roundCounter = 0;
 
 	public Spider(String id, Maze model, int row, int col, boolean isAlive, char spriteChar) {
-		super(id, model, row, col, isAlive, spriteChar, 20);
+		super(id, model, row, col, isAlive, spriteChar, 100);
 		goalNode = lastGoal = null;
 		path = new LinkedList<Coord>();
 
@@ -81,7 +83,7 @@ public abstract class Spider extends Moveable {
 		//give the spiders 3 rounds to move out
 		if(roundCounter > 3)
 		{
-			attackScan();
+			healOrAttackScan();
 		}
 		roundCounter++;
 	}

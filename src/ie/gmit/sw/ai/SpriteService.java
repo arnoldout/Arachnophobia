@@ -30,13 +30,22 @@ public class SpriteService {
 	}
 	public void killSprite(String id)
 	{
-		if(set.get(id).cancel(false)){
-			set.remove(id);
-			for (int i = 0; i < sprites.size();) {
-				sprites.remove(i);
-				break;
+		try{
+			if(set.get(id).cancel(false)){
+				set.remove(id);
+				for (int i = 0; i < sprites.size();i++) {
+					if(sprites.get(i).getId().equals(id))
+					{
+						sprites.remove(i);
+						break;
+					}
+				}
+				
 			}
-			
+		}
+		catch(NullPointerException e)
+		{
+			System.out.println("Sprite already dead");
 		}
 	}
 	

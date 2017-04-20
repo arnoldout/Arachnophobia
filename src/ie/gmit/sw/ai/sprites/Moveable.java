@@ -1,6 +1,7 @@
 package ie.gmit.sw.ai.sprites;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.SpriteService;
@@ -14,7 +15,7 @@ public abstract class Moveable implements Runnable{
 	private char spriteChar;
 	private int col;
 	private int row;
-	private int health;
+	private AtomicInteger health;
 	private int attackLevel;
 	private AtomicBoolean isAlive;
 	private Coord lastVisited;
@@ -26,7 +27,7 @@ public abstract class Moveable implements Runnable{
 		this.row = row;
 		this.spriteChar = spriteChar;
 		this.isAlive = new AtomicBoolean(true);
-		this.health = 100;
+		this.health = new AtomicInteger(100);
 		this.attackLevel = attackLevel;
 		this.model.set(row, col, spriteChar);
 		this.lastVisited = new Coord(row, col);
@@ -42,8 +43,8 @@ public abstract class Moveable implements Runnable{
 
 	public void takeDamage(int damage)
 	{
-		this.health = this.health - damage;
-		if(health<0)
+		this.health.getAndSet(this.getHealth()- damage);
+		if(this.getHealth()<0)
 		{
 			//stop other sprites attacking
 			setAlive(false);
@@ -54,7 +55,7 @@ public abstract class Moveable implements Runnable{
 		}
 	}
 	
-	public void attackScan()
+	public void healOrAttackScan()
 	{
 		int x = this.getCol();
 		int y = this.getRow();
@@ -79,6 +80,15 @@ public abstract class Moveable implements Runnable{
 					catch(NullPointerException e)
 					{
 						//sprite already ded
+					}
+				}
+				else if(this.getMaze()[i][j] == this.getSpriteChar())
+				{
+					//do update lazily, should prioritize the attacks over friendly healing
+					if(this.health.get()<100)
+					{
+						this.health.lazySet(this.health.get()+20);
+						break;
 					}
 				}
 			}
@@ -177,11 +187,7 @@ public abstract class Moveable implements Runnable{
 		this.isAlive.set(isAlive);
 	}
 	public int getHealth() {
-		return health;
-	}
-
-	public void setHealth(int health) {
-		this.health = health;
+		return health.get();
 	}
 
 	public char[][] getMaze() {
