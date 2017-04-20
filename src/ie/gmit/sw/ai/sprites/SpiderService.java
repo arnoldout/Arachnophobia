@@ -124,7 +124,6 @@ public class SpiderService {
 		DistanceRisk pair = null;
 		// quick search of surrounding area, fuzzy spiders can only see what's
 		// in their vision
-//		System.out.println("x:" + x + "y:" + y);
 		for (int i = -5; i < 6; i++) {
 			for (int j = -5; j < 6; j++) {
 				try {

@@ -7,6 +7,7 @@ import java.util.List;
 
 import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.NeuralNetworkService;
+import ie.gmit.sw.ai.SpriteService;
 import ie.gmit.sw.ai.nn.NeuralNetwork;
 import ie.gmit.sw.ai.nn.Utils;
 import ie.gmit.sw.ai.traversal.BestFirstCharSearch;
@@ -39,7 +40,7 @@ public class Spartan extends Moveable {
 	// could be an issue with goal nodes
 
 	public Spartan(String id, Maze model, int col, int row, boolean isAlive) {
-		super(id, model, col, row, isAlive, '\u0035', 100);
+		super(id, model, col, row, isAlive, '\u0035', 400);
 		nn = NeuralNetworkService.getInstance().getSpartanNeuralNetwork();
 		goalNode = lastGoal = 0;
 		t = new BestFirstCharSearch(this.getMaze());
@@ -162,6 +163,7 @@ public class Spartan extends Moveable {
 		// make sure to set the last goal to null just in case he reached his
 		// last goal or something
 		else {
+
 			if (lastGoal != 0)
 				lastGoal = 0;
 			System.out.println("deciding where to wander");
@@ -223,11 +225,13 @@ public class Spartan extends Moveable {
 	// array
 	private void boom(int row, int col, int radius) {
 		int[][] bounds = getBounds(row, col, radius);
-
+		SpriteService s = SpriteService.getInstance();
 		for (int i = bounds[0][0]; i < bounds[0][1]; i++) {
 			for (int j = bounds[1][0]; j < bounds[1][1]; j++) {
-				if (this.getMaze()[i][j] > '5')
-					this.getModel().set(i, j, ' ');
+				if (this.getMaze()[i][j] > '5'){
+				System.out.println("killing a "+this.getMaze()[i][j]);
+					s.killSprite(s.findSprite(j, j, this.getMaze()[i][j]).getId());
+				}
 			}
 		}
 	}
@@ -252,28 +256,10 @@ public class Spartan extends Moveable {
 		hasmap++;
 	}
 
-	// don't call java a piece of shit
 	private void printPOS() {
 		System.out.println(this.getRow() + " " + this.getCol());
 	}
 
-	private int getWanderPos() {
-		int range = (4 - 1) + 1;
-		int i = (int) (Math.random() * range) + 1;
-		switch (i) {
-		case 1:
-			return encodePos((this.getRow() - 1), this.getCol());
-		case 2:
-			return encodePos(this.getRow(), (this.getCol() - 1));
-		case 3:
-			return encodePos((this.getRow() + 1), this.getCol());
-		case 4:
-			return encodePos(this.getRow(), (this.getCol() + 1));
-		default:
-			return encodePos(this.getRow(), (this.getCol() - 1));
-		}
-
-	}
 
 	// to get x : num % 1000
 	// to get y : (int)num / 1000
@@ -301,22 +287,22 @@ public class Spartan extends Moveable {
 
 		for (int r = 0; r < maze[0].length; r++) {
 			if (maze[0][r] == ' ') {
-				maze[0][r] = '\u0038';
+//				maze[0][r] = '\u0038';
 				exits.add(new Coord(0, r));
 			}
 			if (maze[maze.length - 1][r] == ' ') {
-				maze[maze.length - 1][r] = '\u0038';
-				System.out.println(maze[maze.length - 1][r]);
+//				maze[maze.length - 1][r] = '\u0038';
+//				System.out.println(maze[maze.length - 1][r]);
 				exits.add(new Coord(maze.length - 1, r));
 			}
 			if (maze[r][0] == ' ') {
-				maze[r][0] = '\u0038';
+//				maze[r][0] = '\u0038';
 				System.out.println(maze[r][0]);
 				exits.add(new Coord(r, 0));
 			}
 			if (maze[r][maze.length - 1] == ' ') {
-				maze[0][maze.length-1] = '\u0038';
-				System.out.println(maze[0][maze.length-1]);
+//				maze[0][maze.length-1] = '\u0038';
+//				System.out.println(maze[0][maze.length-1]);
 				exits.add(new Coord(r, maze.length - 1));
 			}
 		}
@@ -333,7 +319,7 @@ public class Spartan extends Moveable {
 		int col = this.getCol();
 		int row = this.getRow();
 		swrdNearby = hlpNearby = hbmbNearby = bmbNearby = 0;
-
+		this.healOrAttackScan();
 		// start @ current pos, x-5 to x+5
 		// y-5 to y+5
 		// Might up this to 10 or 7 at the least.
