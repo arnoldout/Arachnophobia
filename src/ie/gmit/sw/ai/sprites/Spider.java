@@ -30,7 +30,7 @@ public abstract class Spider extends Moveable{
 
 	public void traversePath()
 	{
-		if(counter>5)
+		if(counter>1)
 		{
 			takeDamage(100);
 		}
