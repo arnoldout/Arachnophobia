@@ -1,7 +1,9 @@
 package ie.gmit.sw.ai.sprites;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 
 import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.NeuralNetworkService;
@@ -32,16 +34,22 @@ public class Spartan extends Moveable {
 	private int hbmbNearby = 0;
 	private int hasmap = 0;
 	private double[] inputs = new double[5];
+	private List<Coord> exits = new ArrayList<Coord>();
 	// careful with this, if pathfinging error occur later one, remember this
 	// could be an issue with goal nodes
-
 
 	public Spartan(String id, Maze model, int col, int row, boolean isAlive) {
 		super(id, model, col, row, isAlive, '\u0035', 100);
 		nn = NeuralNetworkService.getInstance().getSpartanNeuralNetwork();
 		goalNode = lastGoal = 0;
-
-		
+		t = new BestFirstCharSearch(this.getMaze());
+		Coord start = new Coord(row, col);
+		// find exits for later
+		for (Coord c : getExits()) {
+			// System.out.println(c + "is an exit");
+			if (!t.traverse(start, c).isEmpty())
+				exits.add(c);
+		}
 	}
 
 	@Override
@@ -52,7 +60,7 @@ public class Spartan extends Moveable {
 		inputs[1] = hlpNearby > 0 ? 1 : 0;
 		inputs[2] = bmbNearby > 0 ? 1 : 0;
 		inputs[3] = hbmbNearby > 0 ? 1 : 0;
-		inputs[4] = hasmap;
+		inputs[4] = hasmap > 0 ? 1 : 0;
 		try {
 			actions = nn.process(inputs);
 		} catch (Exception e) {
@@ -65,24 +73,33 @@ public class Spartan extends Moveable {
 		// maybe move to a better code structure for this if we get around to it
 		switch (resultsIndx) {
 		case 0:
-//			System.out.println("going for the sword@" + swrdNearby);
+			if (goalNode != swrdNearby)
+				System.out.println("going for the sword@" + swrdNearby);
 			goalNode = swrdNearby;
 			break;
 		case 1:
-//			System.out.println("going for the help@" + hlpNearby);
+			if (goalNode != hlpNearby)
+				System.out.println("going for the help@" + hlpNearby);
 			goalNode = hlpNearby;
 			break;
 		case 2:
-//			System.out.println("going for the bomb@" + bmbNearby);
+			if (goalNode != bmbNearby)
+				System.out.println("going for the bomb@" + bmbNearby);
 			goalNode = bmbNearby;
 			break;
 		case 3:
-//			System.out.println("going for the hbomb" + hbmbNearby);
+			if (goalNode != hbmbNearby)
+				System.out.println("going for the hbomb" + hbmbNearby);
 			goalNode = hbmbNearby;
 			break;
 		case 4:
 			goalNode = 0;
-//			System.out.println("wandering");
+			System.out.println("wandering");
+			break;
+		case 5:
+			// this is kind of dumb, but whatever
+			System.out.println("running to exit");
+			goalNode = encodePos(exits.get(0).getRow(), exits.get(0).getCol());
 			break;
 		default:
 			break;
@@ -97,29 +114,25 @@ public class Spartan extends Moveable {
 		// path he already set out
 		if (goalNode != 0) {
 
-			if (lastGoal == 0 || lastGoal!=goalNode) {
-				t = new BestFirstCharSearch(this.getMaze());
-				
+			if (lastGoal != goalNode) {
 
-//				System.out.println("goal nodes" + lastGoal + " " + goalNode);
+				// System.out.println("goal nodes" + lastGoal + " " + goalNode);
 				if (goalNode != 0) {
 					lastGoal = goalNode;
 				}
-				try {
-					Coord start = new Coord(this.getRow(), this.getCol());
-					Coord end= new Coord(decodeYPos(goalNode), decodeXPos(goalNode));
-					path = new LinkedList<Coord>((t.traverse(start, end)));
 
-//					System.out.println("have path: " + path);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				Coord start = new Coord(this.getRow(), this.getCol());
+				Coord end = new Coord(decodeYPos(goalNode), decodeXPos(goalNode));
+				path = new LinkedList<Coord>((t.traverse(start, end)));
+
+				// System.out.println("have path: " + path);
+
 			}
 
 			if (!path.isEmpty()) {
-				
+
 				Coord n = path.peek();
-//				System.out.println(n);
+				// System.out.println(n);
 				if (isValidMove(n.getRow(), n.getCol())) {
 					n = path.poll();
 					doMove(n.getRow(), n.getCol());
@@ -128,14 +141,16 @@ public class Spartan extends Moveable {
 					if (this.getMaze()[n.getRow()][n.getCol()] != '0')
 						try {
 							doPickup(n.getRow(), n.getCol());
+
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-					
-					else{
+
+					else {
 						Coord start = new Coord(this.getRow(), this.getCol());
-						Coord end= new Coord(decodeYPos(goalNode), decodeXPos(goalNode));
-//						System.out.println("tried going to " +n.getRow() + n.getCol());
+						Coord end = new Coord(decodeYPos(goalNode), decodeXPos(goalNode));
+						// System.out.println("tried going to " +n.getRow() +
+						// n.getCol());
 						path = new LinkedList<Coord>((t.traverse(start, end)));
 					}
 
@@ -149,12 +164,13 @@ public class Spartan extends Moveable {
 		else {
 			if (lastGoal != 0)
 				lastGoal = 0;
-//			System.out.println("deciding where to wander");
-			int pos = getWanderPos();
-			if (isValidMove(decodeYPos(pos), decodeXPos(pos))) {
-				doMove(decodeYPos(pos), decodeXPos(pos));
-			} //else
-//				System.out.println("Cant wander there");
+			System.out.println("deciding where to wander");
+			Coord pos = getRandomCirclePoint(15);
+			Coord start = new Coord(this.getRow(), this.getCol());
+
+			goalNode = encodeFromCoord(pos);
+			path = new LinkedList<Coord>((t.traverse(start, pos)));
+			System.out.println("Wandering to " + pos);
 		}
 	}
 
@@ -164,6 +180,28 @@ public class Spartan extends Moveable {
 	private boolean doPickup(int row, int col) {
 		char target = this.getMaze()[row][col];
 		if (target < '5' && target > '0') {
+			char temp = this.getMaze()[row][col];
+
+			// 1(int=49) is a sword, 0 is a hedge
+			// 2(int=50) is help, 0 is a hedge
+			// 3(int=51) is a bomb, 0 is a hedge
+			// 4(int=52) is a hydrogen bomb, 0 is a hedge
+			switch (temp) {
+			case '1':
+				getSword();
+				break;
+			case '2':
+				getHelp();
+				break;
+			case '3':
+				smallBoom(row, col);
+				break;
+			case '4':
+				bigBoom(row, col);
+				break;
+			default:
+				break;
+			}
 			this.getModel().set(row, col, '0');
 			return true;
 		}
@@ -181,13 +219,14 @@ public class Spartan extends Moveable {
 	}
 
 	// small bomb, kill spiders in a radius
-	//unfinished, needs to kill the threads not just remove the char from the array
+	// unfinished, needs to kill the threads not just remove the char from the
+	// array
 	private void boom(int row, int col, int radius) {
 		int[][] bounds = getBounds(row, col, radius);
 
 		for (int i = bounds[0][0]; i < bounds[0][1]; i++) {
 			for (int j = bounds[1][0]; j < bounds[1][1]; j++) {
-				if (this.getMaze()[i][j] > 5)
+				if (this.getMaze()[i][j] > '5')
 					this.getModel().set(i, j, ' ');
 			}
 		}
@@ -209,9 +248,10 @@ public class Spartan extends Moveable {
 
 	// get help, provides a map to the exit
 	private void getHelp() {
+		hasmap = 1;
 	}
 
-	//don't call java a piece of shit
+	// don't call java a piece of shit
 	private void printPOS() {
 		System.out.println(this.getRow() + " " + this.getCol());
 	}
@@ -237,8 +277,12 @@ public class Spartan extends Moveable {
 	// to get x : num % 1000
 	// to get y : (int)num / 1000
 	// faster than dealing with collections
-	private int encodePos(int y, int x) {
-		return x + 1000 * y;
+	private int encodePos(int row, int col) {
+		return col + 1000 * row;
+	}
+
+	private int encodeFromCoord(Coord c) {
+		return encodePos(c.getRow(), c.getCol());
 	}
 
 	private int decodeXPos(int pos) {
@@ -247,6 +291,36 @@ public class Spartan extends Moveable {
 
 	private int decodeYPos(int pos) {
 		return (int) pos / 1000;
+	}
+
+	private List<Coord> getExits() {
+		List<Coord> exits = new ArrayList<Coord>();
+		char[][] maze = this.getMaze();
+		char c = this.getSpriteChar();
+
+		for (int r = 0; r < maze[0].length; r++) {
+			if (maze[0][r] == ' ') {
+				maze[0][r] = '\u0038';
+				exits.add(new Coord(0, r));
+			}
+			if (maze[maze.length - 1][r] == ' ') {
+				maze[maze.length - 1][r] = '\u0038';
+				System.out.println(maze[maze.length - 1][r]);
+				exits.add(new Coord(maze.length - 1, r));
+			}
+			if (maze[r][0] == ' ') {
+				maze[r][0] = '\u0038';
+				System.out.println(maze[r][0]);
+				exits.add(new Coord(r, 0));
+			}
+			if (maze[r][maze.length - 1] == ' ') {
+				maze[0][maze.length-1] = '\u0038';
+				System.out.println(maze[0][maze.length-1]);
+				exits.add(new Coord(r, maze.length - 1));
+			}
+		}
+		System.out.println(exits.size());
+		return exits;
 	}
 
 	// scan for features nearby
@@ -275,6 +349,12 @@ public class Spartan extends Moveable {
 				// \u0034 is a hydrogen bomb
 
 				if (maze[i][j] != '0') {
+					// there is a free space on the edge of the board
+					// time to run for the exit, just cheat and say he has a map
+					// because he DOES know where the exit is.
+					if (i == 99 || i == 0 || j == 99 || j == 0)
+						hasmap = encodePos(i, j);
+
 					int pos = encodePos(i, j);
 					switch (maze[i][j]) {
 					case '\u0031':// sword
@@ -295,5 +375,7 @@ public class Spartan extends Moveable {
 				}
 			}
 		}
+
 	}
+
 }
