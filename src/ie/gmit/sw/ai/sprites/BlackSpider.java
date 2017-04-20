@@ -7,8 +7,8 @@ import ie.gmit.sw.ai.Maze;
 public class BlackSpider extends Spider {
 
 	Random r = new Random();
-	public BlackSpider(Maze model, int x, int y, boolean isAlive) {
-		super(model, x, y, isAlive, '\u0036');        
+	public BlackSpider(String id, Maze model, int x, int y, boolean isAlive) {
+		super(id, model, x, y, isAlive, '\u0036');        
 	}
 	
 	public DistanceRisk compareRisks(DistanceRisk ...distanceRisks )

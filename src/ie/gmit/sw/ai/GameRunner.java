@@ -1,19 +1,16 @@
 package ie.gmit.sw.ai;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-import ie.gmit.sw.ai.sprites.SpriteType;
-import ie.gmit.sw.ai.traversal.MazeNodeConverter;
-import ie.gmit.sw.ai.traversal.Node;
+import javax.swing.JFrame;
 public class GameRunner implements KeyListener{
 	private static final int MAZE_DIMENSION = 100;
 	private static final int IMAGE_COUNT = 14;
 	private GameView view;
 	private Maze model;
-
-	@SuppressWarnings("unused")
 	private GameController controller;
 	private int currentRow;
 	private int currentCol;
@@ -47,7 +44,7 @@ public class GameRunner implements KeyListener{
 	private void placePlayer(){   	
     	currentRow = (int) (MAZE_DIMENSION * Math.random());
     	currentCol = (int) (MAZE_DIMENSION * Math.random());
-    	controller.placePlayer(currentCol, currentRow);
+    	controller.placePlayer(currentRow, currentCol);
 //    	System.out.println("player @"+ currentCol +" "+ currentRow);
     	//model.set(currentRow, currentCol, '\u0035');
     	updateView(); 		

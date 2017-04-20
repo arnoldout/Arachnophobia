@@ -4,8 +4,8 @@ import ie.gmit.sw.ai.Maze;
 
 public class GreenSpider extends Spider{
 
-	public GreenSpider(Maze model, int x, int y, boolean isAlive) {
-		super(model, x, y, isAlive, '\u0039');
+	public GreenSpider(String id, Maze model, int x, int y, boolean isAlive) {
+		super(id,model, x, y, isAlive, '\u0039');
 		
 	}
 	public DistanceRisk compareRisks(DistanceRisk ...distanceRisks )

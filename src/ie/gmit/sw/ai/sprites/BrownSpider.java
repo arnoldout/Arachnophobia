@@ -4,8 +4,8 @@ import ie.gmit.sw.ai.Maze;
 
 public class BrownSpider extends Spider{
 
-	public BrownSpider(Maze model, int x, int y, boolean isAlive) {
-		super(model, x, y, isAlive, '\u0038');
+	public BrownSpider(String id, Maze model, int x, int y, boolean isAlive) {
+		super(id,model, x, y, isAlive, '\u0038');
 		
 	}
 

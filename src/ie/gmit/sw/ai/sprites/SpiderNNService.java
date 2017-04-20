@@ -37,27 +37,27 @@ public class SpiderNNService {
 		};
 		//dfndPickup, friend, attckSpartan, attackEnmy, do what you want spider
 		double[][] expected = { 
-				{ 1, 0, 0, 0, 0},//sees pickup
-				{ 0, 1, 0, 0, 0},//sees friend and health is low
-				{ 0, 0, 0, 0, 1},//sees friend and health is fine
-				{ 1, 0, 0, 0, 0},//sees pickup spartan and health is low
-				{ 0, 1, 0, 0, 0},//sees friend spartan and health is low
-				{ 0, 0, 1, 0, 0},//sees pickup spartan
-				{ 0, 0, 1, 0, 0},//sees friend spartan
-				{ 0, 1, 0, 0, 0},//sees friend spartan enemy
-				{ 0, 0, 0, 1, 0},//sees friend enemy
-				{ 0, 0, 0, 1, 0},//sees enemy spartan
-				{ 1, 0, 0, 0, 0},//sees pickup friend spartan enemy
-				{ 0, 1, 0, 0, 0},//sees pickup friend spartan enemy low health
-				{ 0, 0, 0, 0, 1},//sees enemy low health
-				{ 0, 0, 0, 1, 0},//sees enemy health fine
-				{ 0, 0, 0, 0, 1},//sees spartan low health
-				{ 1, 0, 0, 0, 0},//sees pickup friend health fine
-				{ 0, 1, 0, 0, 0},//sees pickup friend health low
-				{ 0, 0, 1, 0, 0},//sees pickup friend spartan health fine
-				{ 0, 1, 0, 0, 0},//sees pickup friend spartan health low
-				{ 0, 0, 0, 1, 0},//sees pickup friend enemy health fine
-				{ 0, 1, 0, 0, 0}};//sees pickup friend enemy health low
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0},
+				{ 0, 0, 1, 0, 0}};
 				
 		System.out.println("training");
 		bernard = new NeuralNetwork(ActivationFunction.HyperbolicTangent, inputs.length, 6, inputs.length);

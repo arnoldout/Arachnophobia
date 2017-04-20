@@ -4,32 +4,31 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 import ie.gmit.sw.ai.Maze;
-import ie.gmit.sw.ai.traversal.BestFirstTraversator;
-import ie.gmit.sw.ai.traversal.MazeNodeConverter;
+import ie.gmit.sw.ai.traversal.BestFirstCharSearch;
+import ie.gmit.sw.ai.traversal.Coord;
 import ie.gmit.sw.ai.traversal.Node;
 
-public abstract class Spider extends Moveable{
-	private Node goalNode;
-	private Node lastGoal;
+public abstract class Spider extends Moveable {
+	private Coord goalNode;
+	private Coord lastGoal;
+
 	private double[] actions = new double[5];
 	private Node[] actionNodes = new Node[5];
 	private SpiderNNService spiderService = SpiderNNService.getInstance();
-	private BestFirstTraversator t;
-	private Deque<Node> path;
-	// careful with this, if pathfinging error occur later one, remember this
-	// could be an issue with goal nodes
-	private Node[][] travMaze = MazeNodeConverter.makeTraversable(getModel());
-	public Spider(Maze model, int x, int y, boolean isAlive, char spriteChar) {
-		super(model, x, y, isAlive, spriteChar);
-		setHealth(100);
+	private BestFirstCharSearch t;
+	private Deque<Coord> path;
+
+	public Spider(String id, Maze model, int row, int col, boolean isAlive, char spriteChar) {
+		super(id, model, row, col, isAlive, spriteChar, 50);
 		goalNode = lastGoal = null;
-		path = new LinkedList<Node>();
+		path = new LinkedList<Coord>();
 
 	}
 
-	public void traversePath()
-	{
-		//doAttack();
+	public void traversePath() {
+
+		// attackScan();
+
 		// If he has a goal, and if it is different from the last,
 		// he needs to find a path.
 		// first set the new goal node as the goal and set the last goal to
@@ -40,94 +39,99 @@ public abstract class Spider extends Moveable{
 		if (goalNode != null) {
 
 			if (lastGoal == null || !lastGoal.equals(goalNode)) {
-				t = new BestFirstTraversator(goalNode);
-				goalNode.setGoalNode(true);
+				t = new BestFirstCharSearch(this.getMaze());
 
-				System.out.println("goal nodes" + lastGoal + " " + goalNode);
+				// System.out.println("goal nodes" + lastGoal + " " + goalNode);
 				if (goalNode != null) {
-					if (lastGoal != null)
-						lastGoal.setGoalNode(false);
-					goalNode.setGoalNode(true);
 					lastGoal = goalNode;
 				}
 				try {
-					path = new LinkedList<Node>((t.traverse(travMaze, travMaze[this.getY()][this.getX()])));
-					System.out.println("have path: " + path);
+					Coord start = new Coord(this.getRow(), this.getCol());
+					path = new LinkedList<Coord>((t.traverse(start, goalNode)));
+//					System.out.println("have path: " + path);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				if (!path.isEmpty()) {
-					path.poll();// the last one is the one he's
-								// already on
-				}
-				goalNode.setGoalNode(false);
 			}
 
 			if (!path.isEmpty()) {
-				Node n = path.peek();
 
+				Coord n = path.peek();
+//				System.out.println(n);
 				if (isValidMove(n.getRow(), n.getCol())) {
 					n = path.poll();
 					doMove(n.getRow(), n.getCol());
+
+				} else {
+					Coord start = new Coord(this.getRow(), this.getCol());
+					path = new LinkedList<Coord>((t.traverse(start, goalNode)));
+
 				}
 			}
-		}
 
-		// he doesnt have a goal, which means he is just going to wander around
-		// make sure to set the last goal to null just in case he reached his
-		// last goal or something
-		else {
-			if (lastGoal != null)
-				lastGoal = null;
-			System.out.println("deciding where to wander");
-			goalNode = getRandomCirclePoint(7);
-			traversePath();			
+			// he doesnt have a goal, which means he is just going to wander
+			// around
+			// make sure to set the last goal to null just in case he reached
+			// his
+			// last goal or something
+			else {
+				if (lastGoal != null)
+					lastGoal = null;
+//				System.out.println("deciding where to wander");
+				goalNode = getRandomCirclePoint(7);
+				traversePath();
+			}
 		}
 	}
-	//each spider can decide which risks they would rather take
-	public abstract DistanceRisk compareRisks(DistanceRisk ...distanceRisks );
-	
+
+	// each spider can decide which risks they would rather take
+	public abstract DistanceRisk compareRisks(DistanceRisk... distanceRisks);
+
 	@Override
-	public void run(){
-		
-		//need refactoring out into interface or enum
-		travMaze = MazeNodeConverter.makeTraversable(getModel());
-		fuzzyGoal();
-		//System.out.println(this.goalNode);
+	public void run() {
+
+		// need refactoring out into interface or enum
+		// travMaze = MazeNodeConverter.makeTraversable(getModel());
+		 fuzzyGoal();
+		// System.out.println(this.goalNode);
+
 		//travMaze = MazeNodeConverter.makeTraversable(getModel());
 		//neuralGoal();
-		//System.out.println(this.goalNode);
-		
+		// System.out.println(this.goalNode);
+
 		traversePath();
+
 	}
-	public void fuzzyGoal()
-	{
-		DistanceRisk pickupRisk = SpiderService.getInstance().getPickupRisk(getModel(), getX(), getY(), getHealth());
-		DistanceRisk spartanRisk = SpiderService.getInstance().getSpartanRisk(getX(), getY(), getHealth());
-		DistanceRisk friendlyRisk = SpiderService.getInstance().getFriendlyRisk(getModel(), getX(), getY(),getSpriteChar() ,getHealth());
+
+	public void fuzzyGoal() {
+		DistanceRisk pickupRisk = SpiderService.getInstance().getPickupRisk(getModel(), getCol(), getRow(),
+				getHealth());
+		DistanceRisk spartanRisk = SpiderService.getInstance().getSpartanRisk(getCol(), getRow(), getHealth());
+		DistanceRisk friendlyRisk = SpiderService.getInstance().getFriendlyRisk(getModel(), getCol(), getRow(),
+				getSpriteChar(), getHealth());
 		DistanceRisk r = compareRisks(pickupRisk, spartanRisk, friendlyRisk);
-		this.goalNode = travMaze[r.getY()][r.getX()];
+		this.goalNode = new Coord(r.getY(), r.getX());
 	}
-	public void neuralGoal()
-	{
+
+	public void neuralGoal() {
 		scan();
 		double[] result = spiderService.testNN(actions);
 		for (int i = 0; i < result.length; i++) {
-			if(result[i] == 1)
-			{
-				goalNode = travMaze[actionNodes[i].getCol()][actionNodes[i].getRow()];
+			if (result[i] == 1) {
+				this.goalNode = new Coord(actionNodes[i].getCol(), actionNodes[i].getRow());
 				break;
 			}
 		}
 	}
+
 	private void scan() {
 		char[][] maze = this.getMaze();
-		int x = this.getX();
-		int y = this.getY();
+		int x = this.getCol();
+		int y = this.getRow();
 
 		actions = new double[5];
 		actionNodes = new Node[5];
-		
+
 		int startx = x - 10 < 0 ? 0 : x - 10;
 		int endx = x + 10 > 99 ? 99 : x + 10;
 		int starty = y - 10 < 0 ? 0 : y - 10;
@@ -135,57 +139,55 @@ public abstract class Spider extends Moveable{
 
 		for (int i = starty; i < endy; i++) {
 			for (int j = startx; j < endx; j++) {
-				actions[4] = (getHealth()/2)>49 ? 1 : 0;
+				actions[4] = (getHealth() / 2) > 49 ? 1 : 0;
 				if (maze[i][j] != '0') {
 					switch (maze[i][j]) {
-					//pickups
+					// pickups
 					case '1':
 					case '2':
 					case '3':
 					case '4':
 						actions[0] = 1;
-						actionNodes[0] = new Node(i,j);
+						actionNodes[0] = new Node(i, j);
 						break;
-						//spartan
+					// spartan
 					case '5':
 						actions[2] = 1;
-						actionNodes[2] = new Node(i,j);
+						actionNodes[2] = new Node(i, j);
 						break;
-						//spider (friendly or enemy)
+					// spider (friendly or enemy)
 					default:
 						actions[checkSpiderType(maze[i][j])] = 1;
-						actionNodes[checkSpiderType(maze[i][j])] = new Node(i,j);
+						actionNodes[checkSpiderType(maze[i][j])] = new Node(i, j);
 						break;
 					}
 				}
 			}
 		}
 	}
-	public int checkSpiderType(char c)
-	{
-		//decipher if spider character is friend or foe
-		if(c == this.getSpriteChar())
-		{
+
+	public int checkSpiderType(char c) {
+		// decipher if spider character is friend or foe
+		if (c == this.getSpriteChar()) {
 			return 1;
-		}
-		else{
+		} else {
 			return 3;
 		}
 	}
-	
-	public Node getGoalNode() {
+
+	public Coord getGoalNode() {
 		return goalNode;
 	}
 
-	public void setGoalNode(Node goalNode) {
+	public void setGoalNode(Coord goalNode) {
 		this.goalNode = goalNode;
 	}
 
-	public Node getLastGoal() {
+	public Coord getLastGoal() {
 		return lastGoal;
 	}
 
-	public void setLastGoal(Node lastGoal) {
+	public void setLastGoal(Coord lastGoal) {
 		this.lastGoal = lastGoal;
 	}
 
