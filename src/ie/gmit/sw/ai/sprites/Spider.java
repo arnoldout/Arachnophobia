@@ -7,7 +7,6 @@ import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.nn.Utils;
 import ie.gmit.sw.ai.traversal.BestFirstCharSearch;
 import ie.gmit.sw.ai.traversal.Coord;
-import ie.gmit.sw.ai.traversal.Node;
 
 public abstract class Spider extends Moveable {
 	private Coord goalNode;
@@ -86,16 +85,20 @@ public abstract class Spider extends Moveable {
 
 	@Override
 	public void run() {
-
+		try{
 		// need refactoring out into interface or enum
-		 //fuzzyGoal();
+		 fuzzyGoal();
 		// System.out.println(this.goalNode);
 
-		neuralGoal();
+		//neuralGoal();
 		// System.out.println(this.goalNode);
 
 		traversePath();
-
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public void fuzzyGoal() {

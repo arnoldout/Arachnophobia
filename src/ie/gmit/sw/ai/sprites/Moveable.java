@@ -69,7 +69,7 @@ public abstract class Moveable implements Runnable{
 						&&this.getMaze()[i][j] != '3'&&this.getMaze()[i][j] != '4'&&this.getMaze()[i][j] != this.getSpriteChar())
 				{
 					try{
-						Moveable m = SpriteService.getInstance().findSprite(i, j);
+						Moveable m = SpriteService.getInstance().findSprite(i, j, this.getSpriteChar());
 						if(m.isAlive()){
 							m.takeDamage(this.attackLevel);
 							break;
@@ -77,7 +77,7 @@ public abstract class Moveable implements Runnable{
 					}
 					catch(NullPointerException e)
 					{
-						//no sprite found
+						e.printStackTrace();
 					}
 				}
 			}

@@ -1,5 +1,6 @@
 package ie.gmit.sw.ai;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -29,8 +30,14 @@ public class SpriteService {
 	}
 	public void killSprite(String id)
 	{
-		if(set.get(id).cancel(false))
+		if(set.get(id).cancel(false)){
 			set.remove(id);
+			for (int i = 0; i < sprites.size();) {
+				sprites.remove(i);
+				break;
+			}
+			
+		}
 	}
 	
 	public ScheduledFuture<Double> putFuture(String arg0, ScheduledFuture<Double> arg1) {
@@ -47,14 +54,22 @@ public class SpriteService {
 	public int spritesSize() {
 		return sprites.size();
 	}
-	public Moveable findSprite(int x, int y)
+	public Moveable findSprite(int row, int col, int charType)
 	{
+		int lowestDist = 0;
 		for (int i = 0; i < sprites.size(); i++) {
-			if((sprites.get(i).getCol() == x && sprites.get(i).getRow() == y)||(sprites.get(i).getLastVisited().getCol() == x && sprites.get(i).getLastVisited().getRow() == y))
-			{
-				return sprites.get(i);
+			if(sprites.get(i).getSpriteChar()!=charType){
+				double dist = euclideanDistance(sprites.get(i).getRow(),sprites.get(i).getCol(),row,col);
+				if(dist<lowestDist)
+				{
+					lowestDist = i;
+				}
 			}
 		}
-		return null;
+		return sprites.get(lowestDist);
+	}
+
+	public double euclideanDistance(int x1, int y1, int x2, int y2) {
+		return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
 	}
 }
