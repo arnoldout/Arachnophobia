@@ -29,9 +29,8 @@ public abstract class Spider extends Moveable{
 
 
 	public void traversePath()
-	{		try{
-
-		if(counter>1)
+	{
+		if(counter>5)
 		{
 			takeDamage(100);
 			return;
@@ -93,8 +92,6 @@ public abstract class Spider extends Moveable{
 			traversePath();			
 		}
 
-	}
-	catch(Exception e){e.printStackTrace();}
 	}
 	//each spider can decide which risks they would rather take
 	public abstract DistanceRisk compareRisks(DistanceRisk ...distanceRisks );

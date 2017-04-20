@@ -14,7 +14,7 @@ import ie.gmit.sw.ai.traversal.Node;
 //maybe rename this... because reasons....
 public class GameController {
 	private Maze model;
-	private ScheduledExecutorService god;//I hope blasphemy isn't still illegal here...
+	private ScheduledThreadPoolExecutor god;//I hope blasphemy isn't still illegal here...
 	private SpriteService spriteService;
 	private static Node[][] traversableMaze;
 
@@ -32,6 +32,7 @@ public class GameController {
 
 		spriteService = SpriteService.getInstance();
 		god= new ScheduledThreadPoolExecutor(1000);
+		god.setRemoveOnCancelPolicy(true);
 		// need to init all the spiders
 		// which need to be runnable
 		// then each spider's .run needs to continually do ai science
