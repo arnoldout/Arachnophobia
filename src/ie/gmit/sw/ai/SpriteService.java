@@ -1,10 +1,9 @@
 package ie.gmit.sw.ai;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 
 import ie.gmit.sw.ai.sprites.Moveable;
@@ -14,7 +13,7 @@ public class SpriteService {
 	private static SpriteService ss;
 	
 	private List<Moveable> sprites;
-	private Map<String,ScheduledFuture<Double>> set = new HashMap<String,ScheduledFuture<Double>>();
+	private ConcurrentMap<String,ScheduledFuture<Double>> set = new ConcurrentHashMap<String,ScheduledFuture<Double>>();
 	private SpriteService()
 	{
 		sprites = new CopyOnWriteArrayList<Moveable>();
@@ -30,12 +29,7 @@ public class SpriteService {
 	}
 	public void killSprite(String id)
 	{
-		try {
-			set.get(id).get();
-		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		set.get(id).cancel(false);
 	}
 	
 	public ScheduledFuture<Double> putFuture(String arg0, ScheduledFuture<Double> arg1) {

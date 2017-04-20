@@ -11,6 +11,7 @@ import ie.gmit.sw.ai.traversal.Node;
 public abstract class Spider extends Moveable{
 	private Node goalNode;
 	private Node lastGoal;
+	int counter = 0;
 	private double[] actions = new double[5];
 	private Node[] actionNodes = new Node[5];
 	private SpiderNNService spiderService = SpiderNNService.getInstance();
@@ -29,8 +30,12 @@ public abstract class Spider extends Moveable{
 
 	public void traversePath()
 	{
-		
-		attackScan();
+		if(counter>5)
+		{
+			takeDamage(100);
+		}
+		counter++;
+		//attackScan();
 		
 		// If he has a goal, and if it is different from the last,
 		// he needs to find a path.
@@ -93,11 +98,11 @@ public abstract class Spider extends Moveable{
 	public void run(){
 		
 		//need refactoring out into interface or enum
-		travMaze = MazeNodeConverter.makeTraversable(getModel());
-		fuzzyGoal();
-		//System.out.println(this.goalNode);
 		//travMaze = MazeNodeConverter.makeTraversable(getModel());
-		//neuralGoal();
+		//fuzzyGoal();
+		//System.out.println(this.goalNode);
+		travMaze = MazeNodeConverter.makeTraversable(getModel());
+		neuralGoal();
 		//System.out.println(this.goalNode);
 		
 		traversePath();
