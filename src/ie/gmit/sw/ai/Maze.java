@@ -53,7 +53,7 @@ public class Maze {
 	private void makeExit() {
 		Random rand = new Random();
 		int r = rand.nextInt(maze.length);
-		maze[maze.length-1][r - 1] = ' ';
+		maze[maze.length-1][r] = ' ';
 		maze[maze.length-2][r] = ' ';
 		maze[maze.length-3][r] = ' ';
 		maze[maze.length-4][r] = ' ';

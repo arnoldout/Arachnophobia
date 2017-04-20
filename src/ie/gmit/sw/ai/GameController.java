@@ -81,6 +81,6 @@ public class GameController {
 		String uniqueID = UUID.randomUUID().toString();
 		Moveable spartan = SpriteType.spartan.getNewInstance(uniqueID,model, row, col, true);
 		spriteService.addSprite(spartan);
-		spriteService.putFuture(uniqueID,(ScheduledFuture<Double>) god.scheduleAtFixedRate(spartan, 0, 500, TimeUnit.MILLISECONDS));
+		spriteService.putFuture(uniqueID,(ScheduledFuture<Double>) god.scheduleAtFixedRate(spartan, 0, 2, TimeUnit.SECONDS));
 	}
 }

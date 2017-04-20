@@ -60,7 +60,7 @@ public class Spartan extends Moveable {
 		inputs[1] = hlpNearby > 0 ? 1 : 0;
 		inputs[2] = bmbNearby > 0 ? 1 : 0;
 		inputs[3] = hbmbNearby > 0 ? 1 : 0;
-		inputs[4] = hasmap > 0 ? 1 : 0;
+		inputs[4] = hasmap == 4 ? 1 : 0;
 		try {
 			actions = nn.process(inputs);
 		} catch (Exception e) {
@@ -73,32 +73,32 @@ public class Spartan extends Moveable {
 		// maybe move to a better code structure for this if we get around to it
 		switch (resultsIndx) {
 		case 0:
-			if (goalNode != swrdNearby)
-				System.out.println("going for the sword@" + swrdNearby);
+//			if (goalNode != swrdNearby)
+//				System.out.println("going for the sword@" + swrdNearby);
 			goalNode = swrdNearby;
 			break;
 		case 1:
-			if (goalNode != hlpNearby)
-				System.out.println("going for the help@" + hlpNearby);
+//			if (goalNode != hlpNearby)
+//				System.out.println("going for the help@" + hlpNearby);
 			goalNode = hlpNearby;
 			break;
 		case 2:
-			if (goalNode != bmbNearby)
-				System.out.println("going for the bomb@" + bmbNearby);
+//			if (goalNode != bmbNearby)
+//				System.out.println("going for the bomb@" + bmbNearby);
 			goalNode = bmbNearby;
 			break;
 		case 3:
-			if (goalNode != hbmbNearby)
-				System.out.println("going for the hbomb" + hbmbNearby);
+//			if (goalNode != hbmbNearby)
+//				System.out.println("going for the hbomb" + hbmbNearby);
 			goalNode = hbmbNearby;
 			break;
 		case 4:
 			goalNode = 0;
-			System.out.println("wandering");
+//			System.out.println("wandering");
 			break;
 		case 5:
 			// this is kind of dumb, but whatever
-			System.out.println("running to exit");
+//			System.out.println("running to exit");
 			goalNode = encodePos(exits.get(0).getRow(), exits.get(0).getCol());
 			break;
 		default:
@@ -244,11 +244,12 @@ public class Spartan extends Moveable {
 
 	// get a sword, for now it just buffs health.
 	private void getSword() {
+		
 	}
 
 	// get help, provides a map to the exit
 	private void getHelp() {
-		hasmap = 1;
+		hasmap++;
 	}
 
 	// don't call java a piece of shit
@@ -353,7 +354,7 @@ public class Spartan extends Moveable {
 					// time to run for the exit, just cheat and say he has a map
 					// because he DOES know where the exit is.
 					if (i == 99 || i == 0 || j == 99 || j == 0)
-						hasmap = encodePos(i, j);
+						hasmap = 4;
 
 					int pos = encodePos(i, j);
 					switch (maze[i][j]) {
