@@ -56,17 +56,24 @@ public class SpriteService {
 	}
 	public Moveable findSprite(int row, int col, int charType)
 	{
-		int lowestDist = 0;
+		Integer lowestPos = null;
+		double lowestDist = 1000000;
+		
 		for (int i = 0; i < sprites.size(); i++) {
 			if(sprites.get(i).getSpriteChar()!=charType){
 				double dist = euclideanDistance(sprites.get(i).getRow(),sprites.get(i).getCol(),row,col);
+				if(lowestPos==null)
+				{
+					lowestPos = new Integer(i);
+				}
 				if(dist<lowestDist)
 				{
-					lowestDist = i;
+					lowestDist = dist;
+					lowestPos = i;
 				}
 			}
 		}
-		return sprites.get(lowestDist);
+		return sprites.get(lowestPos);
 	}
 
 	public double euclideanDistance(int x1, int y1, int x2, int y2) {

@@ -17,16 +17,16 @@ public abstract class Spider extends Moveable {
 	private SpiderNNService spiderService = SpiderNNService.getInstance();
 	private BestFirstCharSearch t;
 	private Deque<Coord> path;
+	private int roundCounter = 0;
 
 	public Spider(String id, Maze model, int row, int col, boolean isAlive, char spriteChar) {
-		super(id, model, row, col, isAlive, spriteChar, 50);
+		super(id, model, row, col, isAlive, spriteChar, 20);
 		goalNode = lastGoal = null;
 		path = new LinkedList<Coord>();
 
 	}
 	public void traversePath()
 	{
-		attackScan();
 		// If he has a goal, and if it is different from the last,
 		// he needs to find a path.
 		// first set the new goal node as the goal and set the last goal to
@@ -77,6 +77,11 @@ public abstract class Spider extends Moveable {
 				goalNode = getRandomCirclePoint(7);
 				traversePath();
 			}
+		}
+		//give the spiders 3 rounds to move out
+		if(roundCounter > 3)
+		{
+			attackScan();
 		}
 	}
 

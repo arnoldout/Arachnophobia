@@ -47,6 +47,7 @@ public abstract class Moveable implements Runnable{
 		{
 			//stop other sprites attacking
 			setAlive(false);
+			System.out.println(this.getId()+" is dead");
 			//remove thread
 			SpriteService.getInstance().killSprite(this.id);
 			getMaze()[row][col] = ' ';
