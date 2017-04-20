@@ -5,11 +5,8 @@ import java.util.LinkedList;
 
 import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.NeuralNetworkService;
-import ie.gmit.sw.ai.nn.BackpropagationTrainer;
 import ie.gmit.sw.ai.nn.NeuralNetwork;
-import ie.gmit.sw.ai.nn.Trainator;
 import ie.gmit.sw.ai.nn.Utils;
-import ie.gmit.sw.ai.nn.activator.Activator.ActivationFunction;
 import ie.gmit.sw.ai.traversal.BestFirstCharSearch;
 import ie.gmit.sw.ai.traversal.Coord;
 
@@ -38,11 +35,10 @@ public class Spartan extends Moveable {
 	// careful with this, if pathfinging error occur later one, remember this
 	// could be an issue with goal nodes
 
-	public Spartan(Maze model, int x, int y, boolean isAlive) {
-		super(model, x, y, isAlive, '\u0035');
-		nn = NeuralNetworkService.getInstance().getSpartanNeuralNetwork();
-		path = new LinkedList<Coord>();
 
+	public Spartan(String id, Maze model, int col, int row, boolean isAlive) {
+		super(id, model, col, row, isAlive, '\u0035', 100);
+		nn = NeuralNetworkService.getInstance().getSpartanNeuralNetwork();
 		goalNode = lastGoal = 0;
 
 		
@@ -113,19 +109,17 @@ public class Spartan extends Moveable {
 					Coord start = new Coord(this.getRow(), this.getCol());
 					Coord end= new Coord(decodeYPos(goalNode), decodeXPos(goalNode));
 					path = new LinkedList<Coord>((t.traverse(start, end)));
-					System.out.println("have path: " + path);
+
+//					System.out.println("have path: " + path);
 				} catch (Exception e) {
 					e.printStackTrace();
-				}
-				if (!path.isEmpty()) {
-					path.poll();// the last one is the one he's
-								// already on
 				}
 			}
 
 			if (!path.isEmpty()) {
+				
 				Coord n = path.peek();
-
+//				System.out.println(n);
 				if (isValidMove(n.getRow(), n.getCol())) {
 					n = path.poll();
 					doMove(n.getRow(), n.getCol());
@@ -137,8 +131,13 @@ public class Spartan extends Moveable {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-					else path.clear();
 					
+					else{
+						Coord start = new Coord(this.getRow(), this.getCol());
+						Coord end= new Coord(decodeYPos(goalNode), decodeXPos(goalNode));
+//						System.out.println("tried going to " +n.getRow() + n.getCol());
+						path = new LinkedList<Coord>((t.traverse(start, end)));
+					}
 
 				}
 			}
@@ -212,8 +211,9 @@ public class Spartan extends Moveable {
 	private void getHelp() {
 	}
 
+	//don't call java a piece of shit
 	private void printPOS() {
-		System.out.println(this.getY() + " " + this.getX());
+		System.out.println(this.getRow() + " " + this.getCol());
 	}
 
 	private int getWanderPos() {
@@ -221,15 +221,15 @@ public class Spartan extends Moveable {
 		int i = (int) (Math.random() * range) + 1;
 		switch (i) {
 		case 1:
-			return encodePos((this.getY() - 1), this.getX());
+			return encodePos((this.getRow() - 1), this.getCol());
 		case 2:
-			return encodePos(this.getY(), (this.getX() - 1));
+			return encodePos(this.getRow(), (this.getCol() - 1));
 		case 3:
-			return encodePos((this.getY() + 1), this.getX());
+			return encodePos((this.getRow() + 1), this.getCol());
 		case 4:
-			return encodePos(this.getY(), (this.getX() + 1));
+			return encodePos(this.getRow(), (this.getCol() + 1));
 		default:
-			return encodePos(this.getY(), (this.getX() - 1));
+			return encodePos(this.getRow(), (this.getCol() - 1));
 		}
 
 	}
@@ -255,17 +255,17 @@ public class Spartan extends Moveable {
 	// cant store spiders through, since they move...
 	private void scan() {
 		char[][] maze = this.getMaze();
-		int x = this.getX();
-		int y = this.getY();
+		int col = this.getCol();
+		int row = this.getRow();
 		swrdNearby = hlpNearby = hbmbNearby = bmbNearby = 0;
 
 		// start @ current pos, x-5 to x+5
 		// y-5 to y+5
 		// Might up this to 10 or 7 at the least.
-		int startx = x - 10 < 0 ? 0 : x - 10;
-		int endx = x + 10 > 99 ? 99 : x + 10;
-		int starty = y - 10 < 0 ? 0 : y - 10;
-		int endy = y + 10 > 99 ? 99 : y + 10;
+		int startx = col - 10 < 0 ? 0 : col - 10;
+		int endx = col + 10 > 99 ? 99 : col + 10;
+		int starty = row - 10 < 0 ? 0 : row - 10;
+		int endy = row + 10 > 99 ? 99 : row + 10;
 
 		for (int i = starty; i < endy; i++) {
 			for (int j = startx; j < endx; j++) {

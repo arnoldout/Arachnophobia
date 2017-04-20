@@ -22,7 +22,7 @@ public class BestFirstCharSearch {
 	}
 
 	public List<Coord> traverse(Coord start, Coord goal) {
-		System.out.println("Starting point=" + start);
+//		System.out.println("Starting point=" + start);
 		this.start = start;
 		cleanup();
 		boolean done = false;
@@ -31,17 +31,17 @@ public class BestFirstCharSearch {
 		try {
 			while (!queue.isEmpty() && !done) {
 				coord = queue.poll();
-				while(visited.contains(coord.toString()))
+				
+				while(!queue.isEmpty() && visited.contains(coord.toString()))
 						coord = queue.poll();
 
-
-				if (visited.contains(coord.toString()))
-					System.out.println("visited");
+//				if (visited.contains(coord.toString()))
+//					System.out.println("visited");
 				visited.add(coord.toString());
 
 
 				if (coord.getRow() == goal.getRow() && coord.getCol() == goal.getCol()) {
-					System.out.println("found the goal, getting path!");
+//					System.out.println("found the goal, getting path!");
 					done = true;
 					getPath(coord);
 				}

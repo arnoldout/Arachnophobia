@@ -5,63 +5,63 @@ import ie.gmit.sw.ai.Maze;
 public enum SpriteType { 
 	spider_black {
 		@Override
-		public Moveable getNewInstance(Maze m, int x, int y, boolean isAlive) {
-			return new BlackSpider(m, x, y, isAlive);
+		public Moveable getNewInstance(String id, Maze m, int row, int col, boolean isAlive) {
+			return new BlackSpider(id, m, row, col, isAlive);
 		}
 	},spider_red {
 		@Override
-		public Moveable getNewInstance(Maze m, int x, int y, boolean isAlive) {
-			return new RedSpider(m, x, y, isAlive);
+		public Moveable getNewInstance(String id, Maze m, int row, int col, boolean isAlive) {
+			return new RedSpider(id, m, row, col, isAlive);
 		}
 	},spider_orange{
 
 		@Override
-		public Moveable getNewInstance(Maze m, int x, int y, boolean isAlive) {
-			return new OrangeSpider(m, x, y, isAlive);
+		public Moveable getNewInstance(String id, Maze m, int row, int col, boolean isAlive) {
+			return new OrangeSpider(id,m, row, col, isAlive);
 		}
 		
 	},spider_grey{
 
 		@Override
-		public Moveable getNewInstance(Maze m, int x, int y, boolean isAlive) {
+		public Moveable getNewInstance(String id, Maze m, int row, int col, boolean isAlive) {
 			// TODO Auto-generated method stub
-			return new GreySpider(m, x, y, isAlive);
+			return new GreySpider(id, m, row, col, isAlive);
 		}
 		
 	},spider_blue{
 
 		@Override
-		public Moveable getNewInstance(Maze m, int x, int y, boolean isAlive) {
+		public Moveable getNewInstance(String id, Maze m, int row, int col, boolean isAlive) {
 			// TODO Auto-generated method stub
-			return new BlueSpider(m, x, y, isAlive);
+			return new BlueSpider(id,m, row, col, isAlive);
 		}
 		
 	},spider_green{
 
 		@Override
-		public Moveable getNewInstance(Maze m, int x, int y, boolean isAlive) {
+		public Moveable getNewInstance(String id, Maze m, int row, int col, boolean isAlive) {
 			// TODO Auto-generated method stub
-			return new GreenSpider(m, x, y, isAlive);
+			return new GreenSpider(id, m, row, col, isAlive);
 		}
 		
 	},spider_brown{
-		public Moveable getNewInstance(Maze m, int x, int y, boolean isAlive) {
+		public Moveable getNewInstance(String id, Maze m, int row, int col, boolean isAlive) {
 			// TODO Auto-generated method stub
-			return new BrownSpider(m, x, y, isAlive);
+			return new BrownSpider(id, m, row, col, isAlive);
 		}
 	},spider_yellow{
 
 		@Override
-		public Moveable getNewInstance(Maze m, int x, int y, boolean isAlive) {
+		public Moveable getNewInstance(String id, Maze m, int row, int col, boolean isAlive) {
 			// TODO Auto-generated method stub
-			return new YellowSpider(m, x, y, isAlive);
+			return new YellowSpider(id, m, row, col, isAlive);
 		}
 	},
 	spartan {
 		@Override
-		public Moveable getNewInstance(Maze m, int x, int y, boolean isAlive) {
-			return new Spartan(m, x, y, isAlive);
+		public Moveable getNewInstance(String id, Maze m, int row, int col, boolean isAlive) {
+			return new Spartan(id, m, row, col, isAlive);
 		}
 	};
-	public abstract Moveable getNewInstance(Maze m, int x, int y, boolean isAlive);
+	public abstract Moveable getNewInstance(String id, Maze m, int row, int col, boolean isAlive);
 }

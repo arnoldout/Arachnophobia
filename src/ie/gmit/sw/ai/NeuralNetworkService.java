@@ -3,8 +3,8 @@ package ie.gmit.sw.ai;
 import ie.gmit.sw.ai.nn.BackpropagationTrainer;
 import ie.gmit.sw.ai.nn.NeuralNetwork;
 import ie.gmit.sw.ai.nn.Trainator;
-import ie.gmit.sw.ai.nn.activator.ActivatorFactory;
 import ie.gmit.sw.ai.nn.activator.Activator.ActivationFunction;
+import ie.gmit.sw.ai.nn.activator.ActivatorFactory;
 
 //This will keep all the neural networks and spiders can get handles on the right neural networks
 //also reduces space complexity...
@@ -12,7 +12,7 @@ import ie.gmit.sw.ai.nn.activator.Activator.ActivationFunction;
 public class NeuralNetworkService {
 	private static NeuralNetworkService nns;
 	private NeuralNetwork spartanNN;
-	private ActivatorFactory aFactory;
+
 
 	public static NeuralNetworkService getInstance(){
 		if(nns == null)
@@ -25,7 +25,7 @@ public class NeuralNetworkService {
 	}
 	
 	private NeuralNetworkService() {
-		aFactory = ActivatorFactory.getInstance();
+
 		//input layer ideas
 		//health
 		//anger?
