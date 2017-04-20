@@ -147,6 +147,7 @@ public class Spartan extends Moveable {
 		// make sure to set the last goal to null just in case he reached his
 		// last goal or something
 		else {
+
 			if (lastGoal != 0)
 				lastGoal = 0;
 //			System.out.println("deciding where to wander");
@@ -211,7 +212,6 @@ public class Spartan extends Moveable {
 	private void getHelp() {
 	}
 
-	//don't call java a piece of shit
 	private void printPOS() {
 		System.out.println(this.getRow() + " " + this.getCol());
 	}
