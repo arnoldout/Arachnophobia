@@ -6,7 +6,7 @@ import javax.swing.*;
 
 public class GameView extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
-	public static final int DEFAULT_VIEW_SIZE = 1120;
+	public static final int DEFAULT_VIEW_SIZE = 700;
 	private int cellspan = 5;
 	private int cellpadding = 3;
 	private Maze maze;

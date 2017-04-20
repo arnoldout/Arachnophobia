@@ -40,7 +40,7 @@ public abstract class Moveable implements Runnable{
 			setAlive(false);
 			//remove thread
 			SpriteService.getInstance().killSprite(this.id);
-			getMaze()[x][y] = ' ';
+			
 		}
 	}
 	
