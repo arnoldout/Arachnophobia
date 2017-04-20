@@ -41,8 +41,8 @@ public class Spartan extends Moveable {
 	// could be an issue with goal nodes
 	private Node[][] travMaze = MazeNodeConverter.makeTraversable(getModel());
 
-	public Spartan(String id, Maze model, int x, int y, boolean isAlive) {
-		super(id, model, x, y, isAlive, '\u0035', 100);
+	public Spartan(String id, Maze model, int col, int row, boolean isAlive) {
+		super(id, model, col, row, isAlive, '\u0035', 100);
 
 		path = new LinkedList<Node>();
 
@@ -158,7 +158,7 @@ public class Spartan extends Moveable {
 					lastGoal = goalNode;
 				}
 				try {
-					path = new LinkedList<Node>((t.traverse(travMaze, travMaze[this.getY()][this.getX()])));
+					path = new LinkedList<Node>((t.traverse(travMaze, travMaze[this.getRow()][this.getCol()])));
 					System.out.println("have path: " + path);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -214,21 +214,21 @@ public class Spartan extends Moveable {
 
 			// get rid of these ifs, just to test a bug fix for now
 			if (row < this.getRow() && col == this.getCol()) {// loot is above
-				this.travMaze[this.getY()][this.getX()].removePath(Direction.North);
+				this.travMaze[this.getRow()][this.getCol()].removePath(Direction.North);
 				this.travMaze[row][col].removePath(Direction.South);
 			} else if (row > this.getRow() && col == this.getCol())// loot is
 																	// below
 			{
-				this.travMaze[this.getY()][this.getX()].removePath(Direction.South);
+				this.travMaze[this.getRow()][this.getCol()].removePath(Direction.South);
 				this.travMaze[row][col].removePath(Direction.North);
 			}
 			if (row == this.getRow() && col < this.getCol()) {// loot is left
-				this.travMaze[this.getY()][this.getX()].removePath(Direction.West);
+				this.travMaze[this.getRow()][this.getCol()].removePath(Direction.West);
 				this.travMaze[row][col].removePath(Direction.East);
 			} else if (row == this.getRow() && col > this.getCol())// loot is
 																	// right
 			{
-				this.travMaze[this.getY()][this.getX()].removePath(Direction.East);
+				this.travMaze[this.getRow()][this.getCol()].removePath(Direction.East);
 				this.travMaze[row][col].removePath(Direction.West);
 			}
 			return true;
@@ -279,7 +279,7 @@ public class Spartan extends Moveable {
 
 	//don't call java a piece of shit
 	private void printPOS() {
-		System.out.println(this.getY() + " " + this.getX());
+		System.out.println(this.getRow() + " " + this.getCol());
 	}
 
 	private int getWanderPos() {
@@ -287,15 +287,15 @@ public class Spartan extends Moveable {
 		int i = (int) (Math.random() * range) + 1;
 		switch (i) {
 		case 1:
-			return encodePos((this.getY() - 1), this.getX());
+			return encodePos((this.getRow() - 1), this.getCol());
 		case 2:
-			return encodePos(this.getY(), (this.getX() - 1));
+			return encodePos(this.getRow(), (this.getCol() - 1));
 		case 3:
-			return encodePos((this.getY() + 1), this.getX());
+			return encodePos((this.getRow() + 1), this.getCol());
 		case 4:
-			return encodePos(this.getY(), (this.getX() + 1));
+			return encodePos(this.getRow(), (this.getCol() + 1));
 		default:
-			return encodePos(this.getY(), (this.getX() - 1));
+			return encodePos(this.getRow(), (this.getCol() - 1));
 		}
 
 	}
@@ -321,17 +321,17 @@ public class Spartan extends Moveable {
 	// cant store spiders through, since they move...
 	private void scan() {
 		char[][] maze = this.getMaze();
-		int x = this.getX();
-		int y = this.getY();
+		int col = this.getCol();
+		int row = this.getRow();
 		swrdNearby = hlpNearby = hbmbNearby = bmbNearby = 0;
 
 		// start @ current pos, x-5 to x+5
 		// y-5 to y+5
 		// Might up this to 10 or 7 at the least.
-		int startx = x - 10 < 0 ? 0 : x - 10;
-		int endx = x + 10 > 99 ? 99 : x + 10;
-		int starty = y - 10 < 0 ? 0 : y - 10;
-		int endy = y + 10 > 99 ? 99 : y + 10;
+		int startx = col - 10 < 0 ? 0 : col - 10;
+		int endx = col + 10 > 99 ? 99 : col + 10;
+		int starty = row - 10 < 0 ? 0 : row - 10;
+		int endy = row + 10 > 99 ? 99 : row + 10;
 
 		for (int i = starty; i < endy; i++) {
 			for (int j = startx; j < endx; j++) {

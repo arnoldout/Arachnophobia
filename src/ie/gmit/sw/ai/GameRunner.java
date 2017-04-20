@@ -47,7 +47,7 @@ public class GameRunner implements KeyListener{
 	private void placePlayer(){   	
     	currentRow = (int) (MAZE_DIMENSION * Math.random());
     	currentCol = (int) (MAZE_DIMENSION * Math.random());
-    	controller.placePlayer(currentCol, currentRow);
+    	controller.placePlayer(currentRow, currentCol);
 //    	System.out.println("player @"+ currentCol +" "+ currentRow);
     	//model.set(currentRow, currentCol, '\u0035');
     	updateView(); 		

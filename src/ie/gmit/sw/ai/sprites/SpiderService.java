@@ -35,7 +35,7 @@ public class SpiderService {
 			double spartanEuclid = 0;
 			for (int i = 0; i < ss.spritesSize(); i++) {
 				if (ss.getSprite(i) instanceof Spartan) {
-					spartanEuclid = euclideanDistance(ss.getSprite(i).getX(), ss.getSprite(i).getY(), pair.getX(), pair.getY());
+					spartanEuclid = euclideanDistance(ss.getSprite(i).getCol(), ss.getSprite(i).getRow(), pair.getX(), pair.getY());
 					break;
 				}
 			}
@@ -100,7 +100,7 @@ public class SpiderService {
 		SpriteService ss = SpriteService.getInstance();
 		for (int i = 0; i < ss.spritesSize(); i++) {
 			if (ss.getSprite(i) instanceof Spartan) {
-				return new DistanceRisk(ss.getSprite(i).getX(), ss.getSprite(i).getY());
+				return new DistanceRisk(ss.getSprite(i).getCol(), ss.getSprite(i).getRow());
 			}
 		}
 		return null;

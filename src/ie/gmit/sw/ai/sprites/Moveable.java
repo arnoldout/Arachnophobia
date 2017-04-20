@@ -12,23 +12,23 @@ public abstract class Moveable implements Runnable{
 	private Maze model;
 	
 	private char spriteChar;
-	private int x;
-	private int y;
+	private int col;
+	private int row;
 	private int health;
 	private int attackLevel;
 	private AtomicBoolean isAlive;
 
-	public Moveable(String id,Maze model, int x, int y, boolean isAlive, char spriteChar, int attackLevel) {
+	public Moveable(String id,Maze model, int row, int col, boolean isAlive, char spriteChar, int attackLevel) {
 		super();
 		this.id = id;
 		this.model = model;
-		this.x = x;
-		this.y = y;
+		this.col = col;
+		this.row = row;
 		this.spriteChar = spriteChar;
 		this.isAlive = new AtomicBoolean(true);
 		this.health = 100;
 		this.attackLevel = attackLevel;
-		this.model.set(y, x, spriteChar);
+		this.model.set(row, col, spriteChar);
 	}
 
 	public void takeDamage(int damage)
@@ -40,14 +40,14 @@ public abstract class Moveable implements Runnable{
 			setAlive(false);
 			//remove thread
 			SpriteService.getInstance().killSprite(this.id);
-			getMaze()[x][y] = ' ';
+			getMaze()[row][col] = ' ';
 		}
 	}
 	
 	public void attackScan()
 	{
-		int x = this.getX();
-		int y = this.getY();
+		int x = this.getCol();
+		int y = this.getRow();
 		
 		int startx = x - 1 < 0 ? 0 : x - 1;
 		int endx = x + 1 > 99 ? 99 : x + 1;
@@ -131,37 +131,31 @@ public abstract class Moveable implements Runnable{
 		return n;
 	}
 
-	public int getRow(){
-		return this.getY();
-	}
-	public int getCol(){
-		return this.getX();
-	}
 	
 	public void doMove(int row, int col){
 		if (row <= model.size() - 1 && row > 0 &&
 				col <= model.size() - 1 && col > 0 &&
 				model.get(row, col) == ' '){
-			model.set(y, x, blank);
-			y=row;
-			x=col;
+			model.set(this.row, this.col, blank);
+			this.row=row;
+			this.col=col;
 			model.set(row, col, spriteChar);
 		}
 	}
-	public int getX() {
-		return x;
+	public int getCol() {
+		return col;
 	}
 
-	public void setX(int x) {
-		this.x = x;
+	public void setCol(int col) {
+		this.col = col;
 	}
 
-	public int getY() {
-		return y;
+	public int getRow() {
+		return row;
 	}
 
 	public void setY(int y) {
-		this.y = y;
+		this.row = y;
 	}
 
 	public boolean isAlive() {

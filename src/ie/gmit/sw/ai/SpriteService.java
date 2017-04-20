@@ -29,7 +29,11 @@ public class SpriteService {
 	}
 	public void killSprite(String id)
 	{
-		set.get(id).cancel(false);
+
+		
+		if(set.get(id).cancel(false))
+			set.remove(id);
+
 	}
 	
 	public ScheduledFuture<Double> putFuture(String arg0, ScheduledFuture<Double> arg1) {
@@ -49,7 +53,7 @@ public class SpriteService {
 	public Moveable findSprite(int x, int y)
 	{
 		for (int i = 0; i < sprites.size(); i++) {
-			if(sprites.get(i).getX() == x && sprites.get(i).getY() == y)
+			if(sprites.get(i).getCol() == x && sprites.get(i).getRow() == y)
 			{
 				return sprites.get(i);
 			}

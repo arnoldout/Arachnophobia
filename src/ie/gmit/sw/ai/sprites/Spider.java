@@ -20,8 +20,8 @@ public abstract class Spider extends Moveable{
 	// careful with this, if pathfinging error occur later one, remember this
 	// could be an issue with goal nodes
 	private Node[][] travMaze = MazeNodeConverter.makeTraversable(getModel());
-	public Spider(String id, Maze model, int x, int y, boolean isAlive, char spriteChar) {
-		super(id, model, x, y, isAlive, spriteChar, 50);
+	public Spider(String id, Maze model, int row, int col, boolean isAlive, char spriteChar) {
+		super(id, model, row, col, isAlive, spriteChar, 50);
 		goalNode = lastGoal = null;
 		path = new LinkedList<Node>();
 
@@ -29,10 +29,12 @@ public abstract class Spider extends Moveable{
 
 
 	public void traversePath()
-	{
+	{		try{
+
 		if(counter>1)
 		{
 			takeDamage(100);
+			return;
 		}
 		counter++;
 		//attackScan();
@@ -58,7 +60,7 @@ public abstract class Spider extends Moveable{
 					lastGoal = goalNode;
 				}
 				try {
-					path = new LinkedList<Node>((t.traverse(travMaze, travMaze[this.getY()][this.getX()])));
+					path = new LinkedList<Node>((t.traverse(travMaze, travMaze[this.getRow()][this.getCol()])));
 					System.out.println("have path: " + path);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -90,6 +92,9 @@ public abstract class Spider extends Moveable{
 			goalNode = getRandomCirclePoint(7);
 			traversePath();			
 		}
+
+	}
+	catch(Exception e){e.printStackTrace();}
 	}
 	//each spider can decide which risks they would rather take
 	public abstract DistanceRisk compareRisks(DistanceRisk ...distanceRisks );
@@ -101,17 +106,19 @@ public abstract class Spider extends Moveable{
 		//travMaze = MazeNodeConverter.makeTraversable(getModel());
 		//fuzzyGoal();
 		//System.out.println(this.goalNode);
+		
 		travMaze = MazeNodeConverter.makeTraversable(getModel());
 		neuralGoal();
 		//System.out.println(this.goalNode);
-		
+
 		traversePath();
+
 	}
 	public void fuzzyGoal()
 	{
-		DistanceRisk pickupRisk = SpiderService.getInstance().getPickupRisk(getModel(), getX(), getY(), getHealth());
-		DistanceRisk spartanRisk = SpiderService.getInstance().getSpartanRisk(getX(), getY(), getHealth());
-		DistanceRisk friendlyRisk = SpiderService.getInstance().getFriendlyRisk(getModel(), getX(), getY(),getSpriteChar() ,getHealth());
+		DistanceRisk pickupRisk = SpiderService.getInstance().getPickupRisk(getModel(), getCol(), getRow(), getHealth());
+		DistanceRisk spartanRisk = SpiderService.getInstance().getSpartanRisk(getCol(), getRow(), getHealth());
+		DistanceRisk friendlyRisk = SpiderService.getInstance().getFriendlyRisk(getModel(), getCol(), getRow(),getSpriteChar() ,getHealth());
 		DistanceRisk r = compareRisks(pickupRisk, spartanRisk, friendlyRisk);
 		this.goalNode = travMaze[r.getY()][r.getX()];
 	}
@@ -129,8 +136,8 @@ public abstract class Spider extends Moveable{
 	}
 	private void scan() {
 		char[][] maze = this.getMaze();
-		int x = this.getX();
-		int y = this.getY();
+		int x = this.getCol();
+		int y = this.getRow();
 
 		actions = new double[5];
 		actionNodes = new Node[5];

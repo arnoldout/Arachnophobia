@@ -45,7 +45,7 @@ public class GameController {
 		// we can use this stuff, just need to make sure we are creating the
 		// runnables as well.
 		addFeature(SpriteType.spider_black, '\u0036', '0');
-//		addFeature(SpriteType.spider_blue, '\u0037', '0'); 
+		addFeature(SpriteType.spider_blue, '\u0037', '0'); 
 //		addFeature(SpriteType.spider_brown, '\u0038', '0'); 
 //		addFeature(SpriteType.spider_green, '\u0039', '0'); 
 //		addFeature(SpriteType.spider_grey, '\u003A', '0'); 
@@ -75,7 +75,6 @@ public class GameController {
 			int col = (int) (model.getMaze()[0].length * Math.random());
 
 			if (model.get(row, col) == replace) {
-				model.set(row, col, feature);
 				counter++;
 				String uniqueID = UUID.randomUUID().toString();
 				Moveable m = s.getNewInstance(uniqueID,model, row, col, true);
@@ -87,9 +86,9 @@ public class GameController {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void placePlayer(int x, int y) {
+	public void placePlayer(int row, int col) {
 		String uniqueID = UUID.randomUUID().toString();
-		Moveable spartan = SpriteType.spartan.getNewInstance(uniqueID,model, x, y, true);
+		Moveable spartan = SpriteType.spartan.getNewInstance(uniqueID,model, row, col, true);
 		spriteService.addSprite(spartan);
 		spriteService.putFuture(uniqueID,(ScheduledFuture<Double>) god.scheduleAtFixedRate(spartan, 0, 2, TimeUnit.SECONDS));
 	}
