@@ -69,7 +69,7 @@ public class GameController {
 	private Queue<Moveable> addFeature(SpriteType s, char feature, char replace) {
 		int counter = 0;
 		Queue<Moveable> sprites = new LinkedList<Moveable>();
-		while (counter < 10) {
+		while (counter < 20) {
 
 			int row = (int) (model.getMaze().length * Math.random());
 			int col = (int) (model.getMaze()[0].length * Math.random());
