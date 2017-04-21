@@ -46,6 +46,7 @@ public class GameController {
 		addFeature(SpriteType.spider_orange, '\u003B', '0'); 
 		addFeature(SpriteType.spider_red, '\u003C', '0'); 
 		addFeature(SpriteType.spider_yellow, '\u003D', '0');
+
 	}
 
 	// this might be an issue later, due to the way the search algos work, they
@@ -60,10 +61,10 @@ public class GameController {
 	@SuppressWarnings("unchecked")
 	private void addFeature(SpriteType s, char feature, char replace) {
 		int counter = 0;
-		while (counter < 10) {
+		while (counter < 50) {
 
-			int row = (int) (model.getMaze().length * Math.random());
-			int col = (int) (model.getMaze()[0].length * Math.random());
+			int row = (int) ((model.getMaze().length-1) * Math.random()+1);
+			int col = (int) ((model.getMaze()[0].length-1) * Math.random()+1);
 
 			if (model.get(row, col) == replace) {
 				counter++;
