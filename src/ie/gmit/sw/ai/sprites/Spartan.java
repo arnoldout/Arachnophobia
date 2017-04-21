@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.swing.SpinnerDateModel;
-import javax.swing.plaf.synth.SynthSeparatorUI;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.NeuralNetworkService;
@@ -45,14 +43,14 @@ public class Spartan extends Moveable {
 	// could be an issue with goal nodes
 
 	public Spartan(String id, Maze model, int col, int row, boolean isAlive) {
-		super(id, model, col, row, isAlive, '\u0035', 100);//sick of him dieing while im testing, he's a titan now. 50k hp.
+		super(id, model, col, row, isAlive, '\u0035', 80);
 		nn = NeuralNetworkService.getInstance().getSpartanNeuralNetwork();
 		goalNode = lastGoal = 0;
 		t = new BestFirstCharSearch(this.getMaze());
 		Coord start = new Coord(row, col);
 		// find exits for later
 		for (Coord c : getExits()) {
-			// System.out.println(c + "is an exit");
+			 System.out.println(c + "is an exit");
 			if (!t.traverse(start, c).isEmpty())
 				exits.add(c);
 		}
@@ -216,7 +214,10 @@ public class Spartan extends Moveable {
 			for (int j = bounds[1][0]; j < bounds[1][1]; j++) {
 				if (this.getMaze()[i][j] > '5') {
 					System.out.println("killing a " + this.getMaze()[i][j]);
-					s.killSprite(s.findSprite(i, j, this.getMaze()[i][j]).getId());
+					Moveable m = s.findSprite(i, j, this.getMaze()[i][j]);
+					System.out.println(m);
+					String str = m.getId();
+					s.killSprite(str);
 				}
 			}
 		}
@@ -253,7 +254,8 @@ public class Spartan extends Moveable {
 
 	// get a sword
 	private void getSword() {
-
+		//max power
+		this.setAttackLevel(new AtomicInteger(100));
 	}
 
 	// get help, provides a map to the exit
@@ -290,17 +292,17 @@ public class Spartan extends Moveable {
 		char c = this.getSpriteChar();
 
 		for (int r = 0; r < maze[0].length; r++) {
-			if (maze[0][r] == ' ') {
+			if (maze[0][r] > '5') {
 				exits.add(new Coord(0, r));
 			}
-			if (maze[maze.length - 1][r] == ' ') {
+			if (maze[maze.length - 1][r] > '5') {
 				exits.add(new Coord(maze.length - 1, r));
 			}
-			if (maze[r][0] == ' ') {
+			if (maze[r][0] > '5') {
 				System.out.println(maze[r][0]);
 				exits.add(new Coord(r, 0));
 			}
-			if (maze[r][maze.length - 1] == ' ') {
+			if (maze[r][maze.length - 1] >'5') {
 				exits.add(new Coord(r, maze.length - 1));
 			}
 		}
@@ -311,21 +313,21 @@ public class Spartan extends Moveable {
 	private int getGoalNode(int indx) {
 		switch (indx) {
 		case 0:
-			if (goalNode != swrdNearby)
-				System.out.println("going for the sword@" + swrdNearby);
+	//		if (goalNode != swrdNearby)
+//				System.out.println("going for the sword@" + swrdNearby);
 			return swrdNearby;
 		case 1:
-			if (goalNode != hlpNearby)
-				System.out.println("going for the help@" + hlpNearby);
+//			if (goalNode != hlpNearby)
+//				System.out.println("going for the help@" + hlpNearby);
 			return hlpNearby;
 		case 2:
-			if (goalNode != bmbNearby)
-				System.out.println("going for the bomb@" + bmbNearby);
+//			if (goalNode != bmbNearby)
+//				System.out.println("going for the bomb@" + bmbNearby);
 			return bmbNearby;
 
 		case 3:
-			if (goalNode != hbmbNearby)
-				System.out.println("going for the hbomb" + hbmbNearby);
+//			if (goalNode != hbmbNearby)
+//				System.out.println("going for the hbomb" + hbmbNearby);
 			return hbmbNearby;
 
 		case 4:
@@ -335,6 +337,10 @@ public class Spartan extends Moveable {
 		case 5:
 			// this is kind of dumb, but whatever
 			// System.out.println("running to exit");
+			if(exits.size() == 0){
+				System.out.println("The exit is not reachable! It may be blocked by a randomly placed wall!");
+				return 0;
+			}
 			return encodePos(exits.get(0).getRow(), exits.get(0).getCol());
 		default:
 			return 0;

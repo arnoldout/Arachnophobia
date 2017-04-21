@@ -76,8 +76,7 @@ public abstract class Moveable implements Runnable{
 					}
 					catch(NullPointerException e)
 					{
-						System.out.println("Char : "+c);
-						e.printStackTrace();
+						//sprite already dead
 					}
 				}
 				else if(c == this.getSpriteChar())
@@ -89,6 +88,12 @@ public abstract class Moveable implements Runnable{
 		}
 	}
 
+	public AtomicInteger getAttackLevel() {
+		return attackLevel;
+	}
+	public void setAttackLevel(AtomicInteger attackLevel) {
+		this.attackLevel = attackLevel;
+	}
 	private void doHeal(int buff) {
 		//do update lazily, should prioritize the attacks over friendly healing
 		if(this.getHealth()+buff<100)
