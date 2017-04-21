@@ -76,8 +76,7 @@ public abstract class Moveable implements Runnable{
 					}
 					catch(NullPointerException e)
 					{
-						System.out.println("Char : "+c);
-						e.printStackTrace();
+						//sprite already dead
 					}
 				}
 				else if(c == this.getSpriteChar())
