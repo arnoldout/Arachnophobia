@@ -2,11 +2,10 @@ package ie.gmit.sw.ai.sprites;
 
 import java.util.Deque;
 import java.util.LinkedList;
-
-import org.jfree.ui.action.DowngradeActionMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import ie.gmit.sw.ai.Maze;
-import ie.gmit.sw.ai.nn.Utils;
+import ie.gmit.sw.ai.SpriteService;
 import ie.gmit.sw.ai.traversal.BestFirstCharSearch;
 import ie.gmit.sw.ai.traversal.Coord;
 
@@ -17,13 +16,13 @@ public abstract class Spider extends Moveable {
 	private Chooseable decisionMaker;
 	private BestFirstCharSearch t;
 	private Deque<Coord> path;
-	private int roundCounter = 0;
+	private AtomicInteger roundCounter = new AtomicInteger(0);
 
 	public Spider(String id, Maze model, int row, int col, boolean isAlive, char spriteChar) {
 		super(id, model, row, col, isAlive, spriteChar, 100);
 		goalNode = lastGoal = null;
 		path = new LinkedList<Coord>();
-		decisionMaker = new FuzzyChoiceImpl();
+		decisionMaker = new NeuralChoiceImpl();
 	}
 	public void traversePath()
 	{
@@ -79,11 +78,11 @@ public abstract class Spider extends Moveable {
 			}
 		}
 		//give the spiders 3 rounds to move out
-		if(roundCounter > 3)
+		if(roundCounter.get() > 3)
 		{
 			healOrAttackScan();
 		}
-		roundCounter++;
+		roundCounter.incrementAndGet();
 	}
 
 	// each spider can decide which risks they would rather take

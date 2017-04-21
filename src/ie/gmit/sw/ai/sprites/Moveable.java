@@ -16,7 +16,7 @@ public abstract class Moveable implements Runnable{
 	private int col;
 	private int row;
 	private AtomicInteger health;
-	private int attackLevel;
+	private AtomicInteger attackLevel;
 	private AtomicBoolean isAlive;
 	private Coord lastVisited;
 	public Moveable(String id,Maze model, int row, int col, boolean isAlive, char spriteChar, int attackLevel) {
@@ -27,8 +27,8 @@ public abstract class Moveable implements Runnable{
 		this.row = row;
 		this.spriteChar = spriteChar;
 		this.isAlive = new AtomicBoolean(true);
-		this.health = new AtomicInteger(100);
-		this.attackLevel = attackLevel;
+		this.health = new AtomicInteger(1000);
+		this.attackLevel = new AtomicInteger(attackLevel);
 		this.model.set(row, col, spriteChar);
 		this.lastVisited = new Coord(row, col);
 	}
@@ -41,19 +41,25 @@ public abstract class Moveable implements Runnable{
 		this.lastVisited = lastVisited;
 	}
 
-	public boolean takeDamage(int damage)
+	public void takeDamage(AtomicInteger damage)
 	{
-		this.health.getAndSet(this.getHealth()- damage);
-		if(this.getHealth()<0)
+		if(damage.get()==1000)
+		{
+			System.out.println("Health Before :"+this.health.get());
+		}
+		this.health.set(this.getHealth()- damage.get());
+		if(damage.get() ==1000)
+		{
+			System.out.println("health after :"+this.health.get());
+		}
+		if(this.health.get()<=0)
 		{
 			//stop other sprites attacking
-			setAlive(false);
+			this.isAlive.set(false);
 			//remove thread
 			SpriteService.getInstance().killSprite(this.id);
 			getMaze()[row][col] = ' ';
-			return true;
 		}
-		return false;
 	}
 	
 	public void healOrAttackScan()
@@ -68,14 +74,25 @@ public abstract class Moveable implements Runnable{
 
 		for (int i = starty; i <= endy; i++) {
 			for (int j = startx; j <= endx; j++) {
-				if(this.getMaze()[i][j] != ' '&&this.getMaze()[i][j] != '0'&&this.getMaze()[i][j] != '1'&&this.getMaze()[i][j] != '2'
-						&&this.getMaze()[i][j] != '3'&&this.getMaze()[i][j] != '4'&&this.getMaze()[i][j] != this.getSpriteChar())
+				char c = this.getMaze()[i][j];
+				if(c != ' '&&c != '0'&&c != '1'&&c != '2'
+						&&c != '3'&&c != '4'&&c != this.getSpriteChar())
 				{
 					try{
-						Moveable m = SpriteService.getInstance().findSprite(i, j, this.getMaze()[i][j]);
+						if(this instanceof Spartan)
+						{
+							System.out.println("Hurt a spider with "+this.attackLevel);
+						}
+						
+						Moveable m = SpriteService.getInstance().findSprite(i, j, c);
 						if(m.isAlive()){
-							if(m.takeDamage(this.attackLevel))
+							m.takeDamage(this.attackLevel);
+							if(!m.isAlive())
 							{
+								if(this instanceof Spartan)
+								{
+									System.out.println("Killed a spider with "+this.attackLevel);
+								}
 								System.out.println("Returned True");
 								doHeal(10);
 							}
@@ -84,10 +101,10 @@ public abstract class Moveable implements Runnable{
 					}
 					catch(NullPointerException e)
 					{
-						//sprite already ded
+						//spider already ded
 					}
 				}
-				else if(this.getMaze()[i][j] == this.getSpriteChar())
+				else if(c == this.getSpriteChar())
 				{
 					doHeal(20);
 					break;
@@ -98,15 +115,13 @@ public abstract class Moveable implements Runnable{
 
 	private void doHeal(int buff) {
 		//do update lazily, should prioritize the attacks over friendly healing
-		if(this.health.get()<100)
+		if(this.getHealth()+buff<100)
 		{
 			this.health.lazySet(this.health.get()+buff);
 		}
 	}
 
-	public int getAttackLevel() {
-		return attackLevel;
-	}
+	
 	public String getId() {
 		return id;
 	}
@@ -115,10 +130,6 @@ public abstract class Moveable implements Runnable{
 		this.id = id;
 	}
 
-
-	public void setAttackLevel(int attackLevel) {
-		this.attackLevel = attackLevel;
-	}
 
 	public char getSpriteChar() {
 		return spriteChar;

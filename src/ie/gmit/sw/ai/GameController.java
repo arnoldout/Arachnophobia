@@ -1,5 +1,7 @@
 package ie.gmit.sw.ai;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -19,6 +21,7 @@ public class GameController {
 		// require the model at instantiation
 	}
 
+	@SuppressWarnings("unchecked")
 	public GameController(Maze model) {
 		this.model = model;
 
@@ -38,15 +41,20 @@ public class GameController {
 		// we can use this stuff, just need to make sure we are creating the
 		// runnables as well.
 
-		addFeature(SpriteType.spider_black, '\u0036', '0');
-		addFeature(SpriteType.spider_blue, '\u0037', '0'); 
-		addFeature(SpriteType.spider_brown, '\u0038', '0'); 
-		addFeature(SpriteType.spider_green, '\u0039', '0'); 
-		addFeature(SpriteType.spider_grey, '\u003A', '0'); 
-		addFeature(SpriteType.spider_orange, '\u003B', '0'); 
-		addFeature(SpriteType.spider_red, '\u003C', '0'); 
-		addFeature(SpriteType.spider_yellow, '\u003D', '0');
-
+		Queue<Moveable> spiders = new LinkedList<Moveable>();
+		spiders.addAll(addFeature(SpriteType.spider_black, '\u0036', '0'));
+		spiders.addAll(addFeature(SpriteType.spider_blue, '\u0037', '0')); 
+		spiders.addAll(addFeature(SpriteType.spider_brown, '\u0038', '0')); 
+		spiders.addAll(addFeature(SpriteType.spider_green, '\u0039', '0')); 
+		spiders.addAll(addFeature(SpriteType.spider_grey, '\u003A', '0')); 
+		spiders.addAll(addFeature(SpriteType.spider_orange, '\u003B', '0')); 
+		spiders.addAll(addFeature(SpriteType.spider_red, '\u003C', '0')); 
+		spiders.addAll(addFeature(SpriteType.spider_yellow, '\u003D', '0'));
+		while(!spiders.isEmpty()){
+			Moveable m = spiders.poll();
+			spriteService.putFuture(m.getId(),(ScheduledFuture<Double>) god.scheduleAtFixedRate(m, 0, 1, TimeUnit.SECONDS));	
+		}
+		
 	}
 
 	// this might be an issue later, due to the way the search algos work, they
@@ -58,23 +66,24 @@ public class GameController {
 	// it's position.
 	// the spiders will be updating their position themselves, this is just for
 	// init purposes
-	@SuppressWarnings("unchecked")
-	private void addFeature(SpriteType s, char feature, char replace) {
+	private Queue<Moveable> addFeature(SpriteType s, char feature, char replace) {
 		int counter = 0;
-		while (counter < 50) {
+		Queue<Moveable> sprites = new LinkedList<Moveable>();
+		while (counter < 10) {
 
-			int row = (int) ((model.getMaze().length-1) * Math.random()+1);
-			int col = (int) ((model.getMaze()[0].length-1) * Math.random()+1);
+			int row = (int) (model.getMaze().length * Math.random());
+			int col = (int) (model.getMaze()[0].length * Math.random());
 
 			if (model.get(row, col) == replace) {
 				counter++;
 				String uniqueID = UUID.randomUUID().toString();
 				Moveable m = s.getNewInstance(uniqueID,model, row, col, true);
 				spriteService.addSprite(m);
+				sprites.add(m);
 				//this creates the spider and gives it to the scheduler, every 2 seconds it calls the spiders run method.
-				spriteService.putFuture(uniqueID,(ScheduledFuture<Double>) god.scheduleAtFixedRate(m, 0, 2, TimeUnit.SECONDS));
 			}
 		}
+		return sprites;
 	}
 
 	@SuppressWarnings("unchecked")
