@@ -46,13 +46,13 @@ public class GameController {
 
 		Queue<Moveable> spiders = new LinkedList<Moveable>();
 		spiders.addAll(addFeature(SpriteType.spider_black, '\u0036', '0'));
-//		spiders.addAll(addFeature(SpriteType.spider_blue, '\u0037', '0')); 
-//		spiders.addAll(addFeature(SpriteType.spider_brown, '\u0038', '0')); 
-//		spiders.addAll(addFeature(SpriteType.spider_green, '\u0039', '0')); 
-//		spiders.addAll(addFeature(SpriteType.spider_grey, '\u003A', '0')); 
-//		spiders.addAll(addFeature(SpriteType.spider_orange, '\u003B', '0')); 
-//		spiders.addAll(addFeature(SpriteType.spider_red, '\u003C', '0')); 
-//		spiders.addAll(addFeature(SpriteType.spider_yellow, '\u003D', '0'));
+		spiders.addAll(addFeature(SpriteType.spider_blue, '\u0037', '0')); 
+		spiders.addAll(addFeature(SpriteType.spider_brown, '\u0038', '0')); 
+		spiders.addAll(addFeature(SpriteType.spider_green, '\u0039', '0')); 
+		spiders.addAll(addFeature(SpriteType.spider_grey, '\u003A', '0')); 
+		spiders.addAll(addFeature(SpriteType.spider_orange, '\u003B', '0')); 
+		spiders.addAll(addFeature(SpriteType.spider_red, '\u003C', '0')); 
+		spiders.addAll(addFeature(SpriteType.spider_yellow, '\u003D', '0'));
 		int counter = 0;
 		while(!spiders.isEmpty()){
 			//a third of all spiders should be neural
@@ -60,7 +60,6 @@ public class GameController {
 			if(counter%3==0)
 			{
  				m.setDecisionMaker(new NeuralChoiceImpl());
- 				m.setDecisionMaker(new FuzzyChoiceImpl());
 			}
 			else{
 				m.setDecisionMaker(new FuzzyChoiceImpl());
@@ -83,7 +82,7 @@ public class GameController {
 	private Queue<Moveable> addFeature(SpriteType s, char feature, char replace) {
 		int counter = 0;
 		Queue<Moveable> sprites = new LinkedList<Moveable>();
-		while (counter < 1) {
+		while (counter < 10) {
 
 			int row = (int) (model.getMaze().length * Math.random());
 			int col = (int) (model.getMaze()[0].length * Math.random());

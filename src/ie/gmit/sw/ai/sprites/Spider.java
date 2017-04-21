@@ -96,6 +96,7 @@ public abstract class Spider extends Moveable {
 	@Override
 	public void run() {
 		try{
+			//use either fuzzy or neural network to calculate the goal node, and move towards that node
 			this.goalNode = decisionMaker.getGoal(this.getHealth(), this.getModel(), this.getRow(), this.getCol(), this, this.getSpriteChar());
 			traversePath();
 		}

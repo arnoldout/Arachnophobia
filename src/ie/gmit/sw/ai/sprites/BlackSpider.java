@@ -10,7 +10,7 @@ public class BlackSpider extends Spider {
 	public BlackSpider(String id, Maze model, int x, int y, boolean isAlive) {
 		super(id, model, x, y, isAlive, '\u0036');        
 	}
-	
+	//black spider's implementation of risk assessment
 	public DistanceRisk compareRisks(DistanceRisk ...distanceRisks )
 	{
 		DistanceRisk highest = new DistanceRisk(0,0,0);
