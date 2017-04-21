@@ -31,7 +31,7 @@ His primary goal is getting four help nodes, as each one provides a piece of a m
 ### Spiders
 The Spiders are broken up into groups when they spawn based on their colour. Red spiders will never attack each other, but will attack a blue, black or any other colour spider if they see one. About a third of each coloured spider group will be controlled by a neural network, allowing those spiders to have much more knowledge of the map, and hence make better decisions. The other 2 thirds are fuzzy controlled and make decisions based on whats visible within a sight radius.
 
-##Neural Spider System
+## Neural Spider System
 The input layer consists of the following booleans:
  - Nearest pickup
  - Nearest Friendly Spider (Same Colour)
