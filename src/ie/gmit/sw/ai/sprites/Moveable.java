@@ -41,18 +41,19 @@ public abstract class Moveable implements Runnable{
 		this.lastVisited = lastVisited;
 	}
 
-	public void takeDamage(int damage)
+	public boolean takeDamage(int damage)
 	{
 		this.health.getAndSet(this.getHealth()- damage);
 		if(this.getHealth()<0)
 		{
 			//stop other sprites attacking
 			setAlive(false);
-			System.out.println(this.getId()+" is dead");
 			//remove thread
 			SpriteService.getInstance().killSprite(this.id);
 			getMaze()[row][col] = ' ';
+			return true;
 		}
+		return false;
 	}
 	
 	public void healOrAttackScan()
@@ -73,7 +74,11 @@ public abstract class Moveable implements Runnable{
 					try{
 						Moveable m = SpriteService.getInstance().findSprite(i, j, this.getMaze()[i][j]);
 						if(m.isAlive()){
-							m.takeDamage(this.attackLevel);
+							if(m.takeDamage(this.attackLevel))
+							{
+								System.out.println("Returned True");
+								doHeal(10);
+							}
 							break;
 						}
 					}
@@ -84,14 +89,18 @@ public abstract class Moveable implements Runnable{
 				}
 				else if(this.getMaze()[i][j] == this.getSpriteChar())
 				{
-					//do update lazily, should prioritize the attacks over friendly healing
-					if(this.health.get()<100)
-					{
-						this.health.lazySet(this.health.get()+20);
-						break;
-					}
+					doHeal(20);
+					break;
 				}
 			}
+		}
+	}
+
+	private void doHeal(int buff) {
+		//do update lazily, should prioritize the attacks over friendly healing
+		if(this.health.get()<100)
+		{
+			this.health.lazySet(this.health.get()+buff);
 		}
 	}
 
