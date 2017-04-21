@@ -14,9 +14,7 @@ public abstract class Spider extends Moveable {
 	private Coord goalNode;
 	private Coord lastGoal;
 
-	private double[] actions = new double[5];
-	private Coord[] actionNodes = new Coord[5];
-	private SpiderNNService spiderService = SpiderNNService.getInstance();
+	private Chooseable decisionMaker;
 	private BestFirstCharSearch t;
 	private Deque<Coord> path;
 	private int roundCounter = 0;
@@ -25,7 +23,7 @@ public abstract class Spider extends Moveable {
 		super(id, model, row, col, isAlive, spriteChar, 100);
 		goalNode = lastGoal = null;
 		path = new LinkedList<Coord>();
-
+		decisionMaker = new FuzzyChoiceImpl();
 	}
 	public void traversePath()
 	{
@@ -94,100 +92,12 @@ public abstract class Spider extends Moveable {
 	@Override
 	public void run() {
 		try{
-		// need refactoring out into interface or enum
-		 fuzzyGoal();
-		// System.out.println(this.goalNode);
-
-		//neuralGoal();
-		// System.out.println(this.goalNode);
-
-		traversePath();
+			this.goalNode = decisionMaker.getGoal(this.getHealth(), this.getModel(), this.getRow(), this.getCol(), this, this.getSpriteChar());
+			traversePath();
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
-		}
-	}
-
-	public void fuzzyGoal() {
-		DistanceRisk pickupRisk = SpiderService.getInstance().getPickupRisk(getModel(), getCol(), getRow(),
-				getHealth());
-		DistanceRisk spartanRisk = SpiderService.getInstance().getSpartanRisk(getCol(), getRow(), getHealth());
-		DistanceRisk friendlyRisk = SpiderService.getInstance().getFriendlyRisk(getModel(), getCol(), getRow(),
-				getSpriteChar(), getHealth());
-		DistanceRisk r = compareRisks(pickupRisk, spartanRisk, friendlyRisk);
-		this.goalNode = new Coord(r.getY(), r.getX());
-	}
-
-	public void neuralGoal() {
-		scan();
-		if(spiderService!=null)
-		{
-			double[] result = spiderService.process(actions);
-			int resultsIndx = Utils.getMaxIndex(result);
-			try{
-				goalNode = new Coord(actionNodes[resultsIndx].getRow(), actionNodes[resultsIndx].getCol());
-			}
-			catch(Exception e)
-			{
-				//always fallback on wander
-				goalNode = new Coord(actionNodes[4].getRow(), actionNodes[4].getCol());
-			}
-		}
-		else{
-			goalNode = new Coord(actionNodes[4].getRow(), actionNodes[4].getCol());
-		}
-	}
-
-	private void scan() {
-		char[][] maze = this.getMaze();
-		int x = this.getCol();
-		int y = this.getRow();
-
-		actions = new double[5];
-		actionNodes = new Coord[5];
-
-		int startx = x - 10 < 0 ? 0 : x - 10;
-		int endx = x + 10 > 99 ? 99 : x + 10;
-		int starty = y - 10 < 0 ? 0 : y - 10;
-		int endy = y + 10 > 99 ? 99 : y + 10;
-
-		for (int i = starty; i < endy; i++) {
-			for (int j = startx; j < endx; j++) {
-				actions[4] = (getHealth()/2)>49 ? 1 : 0;
-				actionNodes[4] = getRandomCirclePoint(10);
-				if (maze[i][j] != '0') {
-					switch (maze[i][j]) {
-					// pickups
-					case '1':
-					case '2':
-					case '3':
-					case '4':
-						actions[0] = 1;
-						actionNodes[0] = new Coord(i, j);
-						break;
-					// spartan
-					case '5':
-						actions[2] = 1;
-						actionNodes[2] = new Coord(i, j);
-						break;
-					// spider (friendly or enemy)
-					default:
-						actions[checkSpiderType(maze[i][j])] = 1;
-						actionNodes[checkSpiderType(maze[i][j])] = new Coord(i, j);
-						break;
-					}
-				}
-			}
-		}
-	}
-
-	public int checkSpiderType(char c) {
-		// decipher if spider character is friend or foe
-		if (c == this.getSpriteChar()) {
-			return 1;
-		} else {
-			return 3;
 		}
 	}
 
