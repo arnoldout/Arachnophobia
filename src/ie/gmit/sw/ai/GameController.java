@@ -7,7 +7,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import ie.gmit.sw.ai.sprites.FuzzyChoiceImpl;
 import ie.gmit.sw.ai.sprites.Moveable;
+import ie.gmit.sw.ai.sprites.NeuralChoiceImpl;
+import ie.gmit.sw.ai.sprites.Spider;
 import ie.gmit.sw.ai.sprites.SpriteType;
 
 //maybe rename this... because reasons....
@@ -43,16 +46,27 @@ public class GameController {
 
 		Queue<Moveable> spiders = new LinkedList<Moveable>();
 		spiders.addAll(addFeature(SpriteType.spider_black, '\u0036', '0'));
-		spiders.addAll(addFeature(SpriteType.spider_blue, '\u0037', '0')); 
-		spiders.addAll(addFeature(SpriteType.spider_brown, '\u0038', '0')); 
-		spiders.addAll(addFeature(SpriteType.spider_green, '\u0039', '0')); 
-		spiders.addAll(addFeature(SpriteType.spider_grey, '\u003A', '0')); 
-		spiders.addAll(addFeature(SpriteType.spider_orange, '\u003B', '0')); 
-		spiders.addAll(addFeature(SpriteType.spider_red, '\u003C', '0')); 
-		spiders.addAll(addFeature(SpriteType.spider_yellow, '\u003D', '0'));
+//		spiders.addAll(addFeature(SpriteType.spider_blue, '\u0037', '0')); 
+//		spiders.addAll(addFeature(SpriteType.spider_brown, '\u0038', '0')); 
+//		spiders.addAll(addFeature(SpriteType.spider_green, '\u0039', '0')); 
+//		spiders.addAll(addFeature(SpriteType.spider_grey, '\u003A', '0')); 
+//		spiders.addAll(addFeature(SpriteType.spider_orange, '\u003B', '0')); 
+//		spiders.addAll(addFeature(SpriteType.spider_red, '\u003C', '0')); 
+//		spiders.addAll(addFeature(SpriteType.spider_yellow, '\u003D', '0'));
+		int counter = 0;
 		while(!spiders.isEmpty()){
-			Moveable m = spiders.poll();
+			//a third of all spiders should be neural
+			Spider m = (Spider)spiders.poll();
+			if(counter%3==0)
+			{
+ 				m.setDecisionMaker(new NeuralChoiceImpl());
+ 				m.setDecisionMaker(new FuzzyChoiceImpl());
+			}
+			else{
+				m.setDecisionMaker(new FuzzyChoiceImpl());
+			}
 			spriteService.putFuture(m.getId(),(ScheduledFuture<Double>) god.scheduleAtFixedRate(m, 0, 1, TimeUnit.SECONDS));	
+			counter++;
 		}
 		
 	}
@@ -69,7 +83,7 @@ public class GameController {
 	private Queue<Moveable> addFeature(SpriteType s, char feature, char replace) {
 		int counter = 0;
 		Queue<Moveable> sprites = new LinkedList<Moveable>();
-		while (counter < 10) {
+		while (counter < 1) {
 
 			int row = (int) (model.getMaze().length * Math.random());
 			int col = (int) (model.getMaze()[0].length * Math.random());

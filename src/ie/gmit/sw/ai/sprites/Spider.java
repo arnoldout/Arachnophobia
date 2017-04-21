@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import ie.gmit.sw.ai.Maze;
-import ie.gmit.sw.ai.SpriteService;
 import ie.gmit.sw.ai.traversal.BestFirstCharSearch;
 import ie.gmit.sw.ai.traversal.Coord;
 
@@ -19,10 +18,16 @@ public abstract class Spider extends Moveable {
 	private AtomicInteger roundCounter = new AtomicInteger(0);
 
 	public Spider(String id, Maze model, int row, int col, boolean isAlive, char spriteChar) {
-		super(id, model, row, col, isAlive, spriteChar, 100);
+		super(id, model, row, col, isAlive, spriteChar, 10);
 		goalNode = lastGoal = null;
 		path = new LinkedList<Coord>();
-		decisionMaker = new NeuralChoiceImpl();
+		decisionMaker = new FuzzyChoiceImpl();
+	}
+	public Chooseable getDecisionMaker() {
+		return decisionMaker;
+	}
+	public void setDecisionMaker(Chooseable decisionMaker) {
+		this.decisionMaker = decisionMaker;
 	}
 	public void traversePath()
 	{

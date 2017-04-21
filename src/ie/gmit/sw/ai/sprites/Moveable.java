@@ -27,7 +27,8 @@ public abstract class Moveable implements Runnable{
 		this.row = row;
 		this.spriteChar = spriteChar;
 		this.isAlive = new AtomicBoolean(true);
-		this.health = new AtomicInteger(1000);
+		//100 is cut off point used in fuzzy
+		this.health = new AtomicInteger(100);
 		this.attackLevel = new AtomicInteger(attackLevel);
 		this.model.set(row, col, spriteChar);
 		this.lastVisited = new Coord(row, col);

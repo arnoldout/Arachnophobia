@@ -28,13 +28,15 @@ public class FuzzyChoiceImpl implements Chooseable {
 	
 	public DistanceRisk getPickupRisk(Maze m, int x, int y, int health) {
 		DistanceRisk pair = findNearestItem(m, x, y, new HashSet<Character>(Arrays.asList(new Character('1'),new Character('2'),new Character('3'),new Character('4'))));
-		
+		System.out.println("Sprite : "+x+" "+y);
 		if(pair!=null){
+			System.out.println("Box : "+pair.getX()+" "+pair.getY());
 			double d = euclideanDistance(x, y, pair.getX(), pair.getY());
 			SpriteService ss = SpriteService.getInstance();
 			double spartanEuclid = 0;
 			for (int i = 0; i < ss.spritesSize(); i++) {
 				if (ss.getSprite(i) instanceof Spartan) {
+					System.out.println("Spartan : "+ss.getSprite(i).getCol()+" "+ss.getSprite(i).getRow());
 					spartanEuclid = euclideanDistance(ss.getSprite(i).getCol(), ss.getSprite(i).getRow(), pair.getX(), pair.getY());
 					break;
 				}
@@ -106,13 +108,8 @@ public class FuzzyChoiceImpl implements Chooseable {
 		return null;
 	}
 	public int spartanDistance(int spriteX, int spriteY, int x, int y) {
-		int xVal = Math.abs(spriteX - x);
-		int yVal = Math.abs(spriteY - y);
-		if (xVal <= 10 && yVal <= 10) {
-			int averagePercentage = ((xVal + yVal) / 2) * 10;
-			return averagePercentage;
-		}
-		return 0;
+		double dist = euclideanDistance(spriteY, spriteY, y, x);
+		return (int)dist;
 	}
 
 
