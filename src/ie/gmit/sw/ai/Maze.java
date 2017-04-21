@@ -52,11 +52,18 @@ public class Maze {
 	// just to be sure, we do a line from the bottom inward of 4 cells
 	private void makeExit() {
 		Random rand = new Random();
-		int r = rand.nextInt(maze.length-2)+1;	
+		int r = rand.nextInt(maze.length-3)+2;	
 		maze[maze.length-1][r] = ' ';
 		maze[maze.length-2][r] = ' ';
 		maze[maze.length-3][r] = ' ';
 		maze[maze.length-4][r] = ' ';
+
+		maze[maze.length-2][r-1] = ' ';
+		maze[maze.length-3][r-1] = ' ';
+		maze[maze.length-4][r-1] = ' ';
+		maze[maze.length-2][r+1] = ' ';
+		maze[maze.length-3][r+1] = ' ';
+		maze[maze.length-4][r+1] = ' ';
 
 	}
 

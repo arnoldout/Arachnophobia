@@ -43,14 +43,14 @@ public class Spartan extends Moveable {
 	// could be an issue with goal nodes
 
 	public Spartan(String id, Maze model, int col, int row, boolean isAlive) {
-		super(id, model, col, row, isAlive, '\u0035', 80);//sick of him dieing while im testing, he's a titan now. 50k hp.
+		super(id, model, col, row, isAlive, '\u0035', 80);
 		nn = NeuralNetworkService.getInstance().getSpartanNeuralNetwork();
 		goalNode = lastGoal = 0;
 		t = new BestFirstCharSearch(this.getMaze());
 		Coord start = new Coord(row, col);
 		// find exits for later
 		for (Coord c : getExits()) {
-			// System.out.println(c + "is an exit");
+			 System.out.println(c + "is an exit");
 			if (!t.traverse(start, c).isEmpty())
 				exits.add(c);
 		}
@@ -292,17 +292,17 @@ public class Spartan extends Moveable {
 		char c = this.getSpriteChar();
 
 		for (int r = 0; r < maze[0].length; r++) {
-			if (maze[0][r] == ' ') {
+			if (maze[0][r] > '5') {
 				exits.add(new Coord(0, r));
 			}
-			if (maze[maze.length - 1][r] == ' ') {
+			if (maze[maze.length - 1][r] > '5') {
 				exits.add(new Coord(maze.length - 1, r));
 			}
-			if (maze[r][0] == ' ') {
+			if (maze[r][0] > '5') {
 				System.out.println(maze[r][0]);
 				exits.add(new Coord(r, 0));
 			}
-			if (maze[r][maze.length - 1] == ' ') {
+			if (maze[r][maze.length - 1] >'5') {
 				exits.add(new Coord(r, maze.length - 1));
 			}
 		}
@@ -337,6 +337,10 @@ public class Spartan extends Moveable {
 		case 5:
 			// this is kind of dumb, but whatever
 			// System.out.println("running to exit");
+			if(exits.size() == 0){
+				System.out.println("The exit is not reachable! It may be blocked by a randomly placed wall!");
+				return 0;
+			}
 			return encodePos(exits.get(0).getRow(), exits.get(0).getCol());
 		default:
 			return 0;

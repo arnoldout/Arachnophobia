@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Random;
 
 import javax.swing.JFrame;
 public class GameRunner implements KeyListener{
@@ -42,8 +43,11 @@ public class GameRunner implements KeyListener{
 	}
 	
 	private void placePlayer(){   	
-    	currentRow = (int) (MAZE_DIMENSION * Math.random());
-    	currentCol = (int) (MAZE_DIMENSION * Math.random());
+		Random rand = new Random();
+		int r = rand.nextInt(MAZE_DIMENSION-3)+2;
+    	currentRow = r;
+    	r = rand.nextInt(MAZE_DIMENSION-3)+2;
+    	currentCol = r;
     	controller.placePlayer(currentRow, currentCol);
 //    	System.out.println("player @"+ currentCol +" "+ currentRow);
     	//model.set(currentRow, currentCol, '\u0035');
