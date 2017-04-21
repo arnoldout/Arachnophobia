@@ -13,8 +13,8 @@ public abstract class Moveable implements Runnable{
 	private Maze model;
 	
 	private char spriteChar;
-	private int col;
-	private int row;
+	private AtomicInteger col;
+	private AtomicInteger row;
 	//each character has a health bar
 	private AtomicInteger health;
 	//amount of damage character will do on attack
@@ -25,8 +25,8 @@ public abstract class Moveable implements Runnable{
 		super();
 		this.id = id;
 		this.model = model;
-		this.col = col;
-		this.row = row;
+		this.col = new AtomicInteger(col);
+		this.row = new AtomicInteger(row);
 		this.spriteChar = spriteChar;
 		this.isAlive = new AtomicBoolean(true);
 		//100 is cut off point used in fuzzy
@@ -43,7 +43,7 @@ public abstract class Moveable implements Runnable{
 			this.isAlive.set(false);
 			//remove thread
 			SpriteService.getInstance().killSprite(this.id);
-			getMaze()[row][col] = ' ';
+			getMaze()[row.get()][col.get()] = ' ';
 		}
 	}
 	
@@ -68,7 +68,6 @@ public abstract class Moveable implements Runnable{
 				{
 					try{						
 						Moveable m = SpriteService.getInstance().findSprite(i, j, c);
-						System.out.println(m);
 						if(m.isAlive()){
 							m.takeDamage(this.attackLevel);
 						
@@ -156,29 +155,29 @@ public abstract class Moveable implements Runnable{
 		if (row <= model.size() - 1 && row > 0 &&
 				col <= model.size() - 1 && col > 0 &&
 				model.get(row, col) == ' '){
-			model.set(this.row, this.col, blank);
-			int oldRow = row;
-			int oldCol = col;
-			this.row=row;
-			this.col=col;
+			model.set(this.row.get(), this.col.get(), blank);
+			int oldRow = this.row.get();
+			int oldCol = this.col.get();
+			this.row=new AtomicInteger(row);
+			this.col=new AtomicInteger(col);
 			model.set(row, col, spriteChar);		
 			SpriteService.getInstance().replaceSprite(this, row, col, oldRow, oldCol);
 		}
 	}
 	public int getCol() {
-		return col;
+		return col.get();
 	}
 
 	public void setCol(int col) {
-		this.col = col;
+		this.col.set(col);
 	}
 
 	public int getRow() {
-		return row;
+		return row.get();
 	}
 
 	public void setY(int y) {
-		this.row = y;
+		this.row .set(y);
 	}
 
 	public boolean isAlive() {
