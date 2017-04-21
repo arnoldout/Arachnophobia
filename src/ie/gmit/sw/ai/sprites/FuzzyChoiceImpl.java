@@ -6,24 +6,24 @@ import java.util.Set;
 
 import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.SpriteService;
+import ie.gmit.sw.ai.traversal.Coord;
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
 
-public class SpiderService {
-	private static SpiderService ss;
+public class FuzzyChoiceImpl implements Chooseable {
 	private FIS fis;
 
-	private SpiderService() {
+	public FuzzyChoiceImpl() {
 		String fileName = "fcl/SpiderMove.fcl";
 		fis = FIS.load(fileName, true);
 	}
-
-	public static SpiderService getInstance() {
-		if (ss == null) {
-			ss = new SpiderService();
-		}
-		return ss;
+	public Coord getGoal(int health, Maze model, int row, int col, Spider s, char spriteChar) {
+		DistanceRisk pickupRisk = getPickupRisk(model, col, row, health);
+		DistanceRisk spartanRisk = getSpartanRisk(col, row, health);
+		DistanceRisk friendlyRisk = getFriendlyRisk(model, col, row, spriteChar, health);
+		DistanceRisk r = s.compareRisks(pickupRisk, spartanRisk, friendlyRisk);
+		return new Coord(r.getY(), r.getX());
 	}
 	
 	public DistanceRisk getPickupRisk(Maze m, int x, int y, int health) {

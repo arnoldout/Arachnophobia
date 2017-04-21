@@ -3,7 +3,9 @@ package ie.gmit.sw.ai.sprites;
 import ie.gmit.sw.ai.nn.BackpropagationTrainer;
 import ie.gmit.sw.ai.nn.NeuralNetwork;
 import ie.gmit.sw.ai.nn.Trainator;
+import ie.gmit.sw.ai.nn.Utils;
 import ie.gmit.sw.ai.nn.activator.Activator.ActivationFunction;
+import ie.gmit.sw.ai.traversal.Coord;
 
 public class SpiderNNService {
 	//thread safe, nn doesn't need to be trained 9000 times
@@ -68,10 +70,10 @@ public class SpiderNNService {
 	public static SpiderNNService getInstance() {
 		return ss;
 	}
-	public double[] process(double[] actions)
+	public double[] process(double[] data_inputs)
 	{
 		try {
-			return bernard.process(actions);
+			return bernard.process(data_inputs);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
