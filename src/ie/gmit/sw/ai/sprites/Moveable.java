@@ -59,7 +59,7 @@ public abstract class Moveable implements Runnable{
 
 		//scan 3x3 area of nearby squares for enemies
 		//if found enemy, then attack it, if it's a 
-		//friendly spider (same colour (that's how its spelled rob)), then it gets a health buff
+		//friendly spider (same colour), then it gets a health buff
 		for (int i = starty; i <= endy; i++) {
 			for (int j = startx; j <= endx; j++) {
 				char c = this.getMaze()[i][j];
@@ -70,10 +70,10 @@ public abstract class Moveable implements Runnable{
 						Moveable m = SpriteService.getInstance().findSprite(i, j, c);
 						if(m.isAlive()){
 							m.takeDamage(this.attackLevel);
-							if(!m.isAlive())
+						/*	if(!m.isAlive())
 							{
 								doHeal(10);
-							}
+							}*/
 							break;
 						}
 					}
