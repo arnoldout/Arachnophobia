@@ -5,6 +5,8 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.SpinnerDateModel;
+
 import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.NeuralNetworkService;
 import ie.gmit.sw.ai.SpriteService;
@@ -14,8 +16,7 @@ import ie.gmit.sw.ai.traversal.BestFirstCharSearch;
 import ie.gmit.sw.ai.traversal.Coord;
 
 public class Spartan extends Moveable {
-	// move this guy out of here, maybe. it's okay to leave one in the spartan
-	// maybe, theres just one of him
+
 	private NeuralNetwork nn;
 	// *********************************************************************
 	// If reworking algorithms works, make this a traversator again
@@ -34,13 +35,16 @@ public class Spartan extends Moveable {
 	private int bmbNearby = 0;
 	private int hbmbNearby = 0;
 	private int hasmap = 0;
-	private double[] inputs = new double[5];
+	private int spdNearBomb = 0;
+	private int spdNearHBomb = 0;
+
+	private double[] inputs = new double[7];
 	private List<Coord> exits = new ArrayList<Coord>();
 	// careful with this, if pathfinging error occur later one, remember this
 	// could be an issue with goal nodes
 
 	public Spartan(String id, Maze model, int col, int row, boolean isAlive) {
-		super(id, model, col, row, isAlive, '\u0035', 25);
+		super(id, model, col, row, isAlive, '\u0035', 50000);//sick of him dieing while im testing, he's a titan now. 50k hp.
 		nn = NeuralNetworkService.getInstance().getSpartanNeuralNetwork();
 		goalNode = lastGoal = 0;
 		t = new BestFirstCharSearch(this.getMaze());
@@ -55,124 +59,104 @@ public class Spartan extends Moveable {
 
 	@Override
 	public void run() {
-		double[] actions = {};
-		scan();
-		inputs[0] = swrdNearby > 0 ? 1 : 0;
-		inputs[1] = hlpNearby > 0 ? 1 : 0;
-		inputs[2] = bmbNearby > 0 ? 1 : 0;
-		inputs[3] = hbmbNearby > 0 ? 1 : 0;
-		inputs[4] = hasmap == 4 ? 1 : 0;
 		try {
-			actions = nn.process(inputs);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		int resultsIndx = Utils.getMaxIndex(actions);
+			double[] actions = {};
+			scan();
+			inputs[0] = swrdNearby > 0 ? 1 : 0;
+			inputs[1] = hlpNearby > 0 ? 1 : 0;
+			inputs[2] = bmbNearby > 0 ? 1 : 0;
+			inputs[3] = hbmbNearby > 0 ? 1 : 0;
+			inputs[4] = hasmap == 4 ? 1 : 0;
+			inputs[5] = spdNearBomb;
+			inputs[6] = spdNearHBomb;
 
-		// the index determines what his goal will be, cases should be what
-		// index each output node is
-		// maybe move to a better code structure for this if we get around to it
-		switch (resultsIndx) {
-		case 0:
-//			if (goalNode != swrdNearby)
-//				System.out.println("going for the sword@" + swrdNearby);
-			goalNode = swrdNearby;
-			break;
-		case 1:
-//			if (goalNode != hlpNearby)
-//				System.out.println("going for the help@" + hlpNearby);
-			goalNode = hlpNearby;
-			break;
-		case 2:
-//			if (goalNode != bmbNearby)
-//				System.out.println("going for the bomb@" + bmbNearby);
-			goalNode = bmbNearby;
-			break;
-		case 3:
-//			if (goalNode != hbmbNearby)
-//				System.out.println("going for the hbomb" + hbmbNearby);
-			goalNode = hbmbNearby;
-			break;
-		case 4:
-			goalNode = 0;
-//			System.out.println("wandering");
-			break;
-		case 5:
-			// this is kind of dumb, but whatever
-//			System.out.println("running to exit");
-			goalNode = encodePos(exits.get(0).getRow(), exits.get(0).getCol());
-			break;
-		default:
-			break;
-		}
-
-		// If he has a goal, and if it is different from the last,
-		// he needs to find a path.
-		// first set the new goal node as the goal and set the last goal to
-		// false, then save the new goal as the last goal for the next decision
-		// process
-		// If he hasnt changed his mind on where to go, just continue on the
-		// path he already set out
-		if (goalNode != 0) {
-
-			if (lastGoal != goalNode) {
-
-				// System.out.println("goal nodes" + lastGoal + " " + goalNode);
-				if (goalNode != 0) {
-					lastGoal = goalNode;
-				}
-
-				Coord start = new Coord(this.getRow(), this.getCol());
-				Coord end = new Coord(decodeYPos(goalNode), decodeXPos(goalNode));
-				path = new LinkedList<Coord>((t.traverse(start, end)));
-
-				// System.out.println("have path: " + path);
-
+			try {
+				actions = nn.process(inputs);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			int resultsIndx = Utils.getMaxIndex(actions);
+			goalNode = getGoalNode(resultsIndx);
 
-			if (!path.isEmpty()) {
+			// the index determines what his goal will be, cases should be what
+			// index each output node is
+			// maybe move to a better code structure for this if we get around
+			// to it
 
-				Coord n = path.peek();
-				// System.out.println(n);
-				if (isValidMove(n.getRow(), n.getCol())) {
-					n = path.poll();
-					doMove(n.getRow(), n.getCol());
+			// If he has a goal, and if it is different from the last,
+			// he needs to find a path.
+			// first set the new goal node as the goal and set the last goal to
+			// false, then save the new goal as the last goal for the next
+			// decision
+			// process
+			// If he hasnt changed his mind on where to go, just continue on the
+			// path he already set out
+			if (goalNode != 0) {
 
-				} else {
-					if (this.getMaze()[n.getRow()][n.getCol()] != '0')
-						try {
-							doPickup(n.getRow(), n.getCol());
+				if (lastGoal != goalNode) {
 
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-
-					else {
-						Coord start = new Coord(this.getRow(), this.getCol());
-						Coord end = new Coord(decodeYPos(goalNode), decodeXPos(goalNode));
-						// System.out.println("tried going to " +n.getRow() +
-						// n.getCol());
-						path = new LinkedList<Coord>((t.traverse(start, end)));
+					// System.out.println("goal nodes" + lastGoal + " " +
+					// goalNode);
+					if (goalNode != 0) {
+						lastGoal = goalNode;
 					}
 
+					Coord start = new Coord(this.getRow(), this.getCol());
+					Coord end = new Coord(decodeRowPos(goalNode), decodeColPos(goalNode));
+					path = new LinkedList<Coord>((t.traverse(start, end)));
+
+					// System.out.println("have path: " + path);
+
+				}
+
+				if (!path.isEmpty()) {
+
+					Coord n = path.peek();
+					// System.out.println(n);
+					if (isValidMove(n.getRow(), n.getCol())) {
+						n = path.poll();
+						doMove(n.getRow(), n.getCol());
+
+					} else {
+						if (this.getMaze()[n.getRow()][n.getCol()] != '0')
+							try {
+								doPickup(n.getRow(), n.getCol());
+
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+
+						else {
+							Coord start = new Coord(this.getRow(), this.getCol());
+							Coord end = new Coord(decodeRowPos(goalNode), decodeColPos(goalNode));
+							// System.out.println("tried going to " +n.getRow()
+							// +
+							// n.getCol());
+							path = new LinkedList<Coord>((t.traverse(start, end)));
+						}
+
+					}
 				}
 			}
-		}
 
-		// he doesnt have a goal, which means he is just going to wander around
-		// make sure to set the last goal to null just in case he reached his
-		// last goal or something
-		else {
-
-			if (lastGoal != 0)
+			// he doesnt have a goal, which means he is just going to wander
+			// around
+			// make sure to set the last goal to null just in case he reached
+			// his
+			// last goal or something
+			else {
 				lastGoal = 0;
-			System.out.println("deciding where to wander");
-			Coord pos = getRandomCirclePoint(15);
-			Coord start = new Coord(this.getRow(), this.getCol());
 
-			goalNode = encodeFromCoord(pos);
-			path = new LinkedList<Coord>((t.traverse(start, pos)));
-			System.out.println("Wandering to " + pos);
+				System.out.println("deciding where to wander");
+				Coord pos = getRandomCirclePoint(5);
+				Coord start = new Coord(this.getRow(), this.getCol());
+
+				goalNode = encodeFromCoord(pos);
+				path = new LinkedList<Coord>((t.traverse(start, pos)));
+				System.out.println("Wandering to " + pos + " using path: " + path);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -228,9 +212,28 @@ public class Spartan extends Moveable {
 		SpriteService s = SpriteService.getInstance();
 		for (int i = bounds[0][0]; i < bounds[0][1]; i++) {
 			for (int j = bounds[1][0]; j < bounds[1][1]; j++) {
-				if (this.getMaze()[i][j] > '5'){
-				System.out.println("killing a "+this.getMaze()[i][j]);
+				if (this.getMaze()[i][j] > '5') {
+					System.out.println("killing a " + this.getMaze()[i][j]);
 					s.killSprite(s.findSprite(j, j, this.getMaze()[i][j]).getId());
+				}
+			}
+		}
+	}
+
+	private void spdScan(int row, int col, int radius) {
+		if (radius == 2)
+			spdNearBomb = 0;
+		else
+			spdNearHBomb = 0;
+		int[][] bounds = getBounds(row, col, radius);
+		SpriteService s = SpriteService.getInstance();
+		for (int i = bounds[0][0]; i < bounds[0][1]; i++) {
+			for (int j = bounds[1][0]; j < bounds[1][1]; j++) {
+				if (this.getMaze()[i][j] > '5') {
+					if (radius == 2)// small bomb scan
+						spdNearBomb = 1;
+					else
+						spdNearHBomb = 1;
 				}
 			}
 		}
@@ -246,9 +249,9 @@ public class Spartan extends Moveable {
 		boom(row, col, 4);
 	}
 
-	// get a sword, for now it just buffs health.
+	// get a sword
 	private void getSword() {
-		
+
 	}
 
 	// get help, provides a map to the exit
@@ -259,7 +262,6 @@ public class Spartan extends Moveable {
 	private void printPOS() {
 		System.out.println(this.getRow() + " " + this.getCol());
 	}
-
 
 	// to get x : num % 1000
 	// to get y : (int)num / 1000
@@ -272,11 +274,11 @@ public class Spartan extends Moveable {
 		return encodePos(c.getRow(), c.getCol());
 	}
 
-	private int decodeXPos(int pos) {
+	private int decodeColPos(int pos) {
 		return pos % 1000;
 	}
 
-	private int decodeYPos(int pos) {
+	private int decodeRowPos(int pos) {
 		return (int) pos / 1000;
 	}
 
@@ -287,27 +289,55 @@ public class Spartan extends Moveable {
 
 		for (int r = 0; r < maze[0].length; r++) {
 			if (maze[0][r] == ' ') {
-//				maze[0][r] = '\u0038';
 				exits.add(new Coord(0, r));
 			}
 			if (maze[maze.length - 1][r] == ' ') {
-//				maze[maze.length - 1][r] = '\u0038';
-//				System.out.println(maze[maze.length - 1][r]);
 				exits.add(new Coord(maze.length - 1, r));
 			}
 			if (maze[r][0] == ' ') {
-//				maze[r][0] = '\u0038';
 				System.out.println(maze[r][0]);
 				exits.add(new Coord(r, 0));
 			}
 			if (maze[r][maze.length - 1] == ' ') {
-//				maze[0][maze.length-1] = '\u0038';
-//				System.out.println(maze[0][maze.length-1]);
 				exits.add(new Coord(r, maze.length - 1));
 			}
 		}
 		System.out.println(exits.size());
 		return exits;
+	}
+
+	private int getGoalNode(int indx) {
+		switch (indx) {
+		case 0:
+			if (goalNode != swrdNearby)
+				System.out.println("going for the sword@" + swrdNearby);
+			return swrdNearby;
+		case 1:
+			if (goalNode != hlpNearby)
+				System.out.println("going for the help@" + hlpNearby);
+			return hlpNearby;
+		case 2:
+			if (goalNode != bmbNearby)
+				System.out.println("going for the bomb@" + bmbNearby);
+			return bmbNearby;
+
+		case 3:
+			if (goalNode != hbmbNearby)
+				System.out.println("going for the hbomb" + hbmbNearby);
+			return hbmbNearby;
+
+		case 4:
+			return goalNode != 0 ? goalNode : 0;
+		// System.out.println("wandering");
+
+		case 5:
+			// this is kind of dumb, but whatever
+			// System.out.println("running to exit");
+			return encodePos(exits.get(0).getRow(), exits.get(0).getCol());
+		default:
+			return 0;
+		}
+
 	}
 
 	// scan for features nearby
@@ -345,16 +375,18 @@ public class Spartan extends Moveable {
 					int pos = encodePos(i, j);
 					switch (maze[i][j]) {
 					case '\u0031':// sword
-						swrdNearby = pos;
+						swrdNearby = swrdNearby == 0 ? encodePos(i, j) : getCloserPos(swrdNearby, pos);
 						break;
 					case '\u0032':// hlp
-						hlpNearby = pos;
+						hlpNearby = hlpNearby == 0 ? encodePos(i, j) : getCloserPos(hlpNearby, pos);
 						break;
 					case '\u0033':// bmb
-						bmbNearby = pos;
+						bmbNearby = bmbNearby == 0 ? encodePos(i, j) : getCloserPos(bmbNearby, pos);
+						spdScan(i, j, 2);
 						break;
 					case '\u0034':// hbmb
-						hbmbNearby = pos;
+						hbmbNearby = hbmbNearby == 0 ? encodePos(i, j) : getCloserPos(hbmbNearby, pos);
+						spdScan(i, j, 4);
 						break;
 					default:
 						break;
@@ -363,6 +395,15 @@ public class Spartan extends Moveable {
 			}
 		}
 
+	}
+
+	private int getCloserPos(int pos1, int pos2) {
+		double dist1, dist2;
+		dist1 = Math.sqrt(
+				Math.pow((this.getRow() - decodeRowPos(pos1)), 2) + Math.pow((this.getCol() - decodeColPos(pos1)), 2));
+		dist2 = Math.sqrt(
+				Math.pow((this.getRow() - decodeRowPos(pos2)), 2) + Math.pow((this.getCol() - decodeColPos(pos2)), 2));
+		return dist1 < dist2 ? pos1 : pos2;
 	}
 
 }
