@@ -71,8 +71,8 @@ public class GameController {
 		Queue<Moveable> sprites = new LinkedList<Moveable>();
 		while (counter < 20) {
 
-			int row = (int) (model.getMaze().length * Math.random());
-			int col = (int) (model.getMaze()[0].length * Math.random());
+			int row = (int) ((model.getMaze().length-2) * Math.random()+1);
+			int col = (int) ((model.getMaze()[0].length-2) * Math.random()+1);
 
 			if (model.get(row, col) == replace) {
 				counter++;

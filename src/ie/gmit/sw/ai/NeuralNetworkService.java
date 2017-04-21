@@ -83,7 +83,8 @@ public class NeuralNetworkService {
 				{ 1, 0, 1, 0, 0, 1, 0 }, // 18 swd, bmb nearby w/spd
 				{ 0, 1, 1, 0, 0, 1, 0 }, // 19 hlp bmb nearby w/spd
 				{ 1, 0, 0, 1, 0, 0, 1 }, // 20 swd, bmb nearby w/spd
-				{ 0, 1, 0, 1, 0, 0, 1 }  // 21 hlp bmb nearby w/spd
+				{ 0, 1, 0, 1, 0, 0, 1 }, // 21 hlp hbmb nearby w/spd
+				{ 0, 1, 0, 1, 0, 0, 1 }  // 22 swd hlp hbmb nearby w/spd
 		};
 		// {getsword, gethlp, getbmb, gethmb, wander, exit}
 		double[][] expected = { 
@@ -107,9 +108,9 @@ public class NeuralNetworkService {
 				{ 0, 0, 1, 0, 0, 0 }, // 17 det bomb
 				{ 0, 0, 1, 0, 0, 0 }, // 18 det bomb
 				{ 0, 0, 1, 0, 0, 0 }, // 19 det bomb
-				{ 0, 0, 1, 0, 0, 0 }, // 17 det bomb
-				{ 0, 0, 0, 1, 0, 0 }, // 18 det hbomb
-				{ 0, 0, 0, 1, 0, 0 }, // 19 det hbomb
+				{ 0, 0, 1, 0, 0, 0 }, // 20 det bomb
+				{ 0, 0, 0, 1, 0, 0 }, // 21 det hbomb
+				{ 0, 0, 0, 1, 0, 0 }, // 22 det hbomb
 		};
 
 		spartanNN = new NeuralNetwork(ActivationFunction.HyperbolicTangent, 7, 8, 6);

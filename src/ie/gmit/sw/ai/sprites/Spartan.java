@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.SpinnerDateModel;
+import javax.swing.plaf.synth.SynthSeparatorUI;
 
 import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.NeuralNetworkService;
@@ -136,7 +137,8 @@ public class Spartan extends Moveable {
 						}
 
 					}
-				}
+				}else
+					goalNode = 0;
 			}
 
 			// he doesnt have a goal, which means he is just going to wander
@@ -214,7 +216,10 @@ public class Spartan extends Moveable {
 			for (int j = bounds[1][0]; j < bounds[1][1]; j++) {
 				if (this.getMaze()[i][j] > '5') {
 					System.out.println("killing a " + this.getMaze()[i][j]);
-					s.killSprite(s.findSprite(j, j, this.getMaze()[i][j]).getId());
+					Moveable m = s.findSprite(i, j, this.getMaze()[i][j]);
+					System.out.println(m);
+					String str = m.getId();
+					s.killSprite(str);
 				}
 			}
 		}
