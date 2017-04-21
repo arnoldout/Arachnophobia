@@ -93,7 +93,7 @@ public abstract class Moveable implements Runnable{
 								{
 									System.out.println("Killed a spider with "+this.attackLevel);
 								}
-								System.out.println("Returned True");
+//								System.out.println("Returned True");
 								doHeal(10);
 							}
 							break;
