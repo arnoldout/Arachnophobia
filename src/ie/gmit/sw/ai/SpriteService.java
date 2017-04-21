@@ -67,9 +67,9 @@ public class SpriteService {
 	{
 		Integer lowestPos = null;
 		double lowestDist = 1000000;
-		System.out.println("Sprites Size :"+sprites.size());
+//		System.out.println("Sprites Size :"+sprites.size());
 		List<Moveable> l = sprites.stream().filter(sp -> sp.getSpriteChar()==charType).collect(Collectors.toList());
-		System.out.println("L Size : "+l.size());
+//		System.out.println("L Size : "+l.size());
 		for (int i = 0; i < l.size(); i++) {
 			if(sprites.get(i).getSpriteChar()!=charType){
 				double dist = euclideanDistance(sprites.get(i).getRow(),sprites.get(i).getCol(),row,col);
