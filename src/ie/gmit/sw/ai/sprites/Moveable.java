@@ -68,18 +68,17 @@ public abstract class Moveable implements Runnable{
 				{
 					try{						
 						Moveable m = SpriteService.getInstance().findSprite(i, j, c);
+						System.out.println(m);
 						if(m.isAlive()){
 							m.takeDamage(this.attackLevel);
-						/*	if(!m.isAlive())
-							{
-								doHeal(10);
-							}*/
+						
 							break;
 						}
 					}
 					catch(NullPointerException e)
 					{
-						//spider already ded
+						System.out.println("Char : "+c);
+						e.printStackTrace();
 					}
 				}
 				else if(c == this.getSpriteChar())
@@ -158,9 +157,12 @@ public abstract class Moveable implements Runnable{
 				col <= model.size() - 1 && col > 0 &&
 				model.get(row, col) == ' '){
 			model.set(this.row, this.col, blank);
+			int oldRow = row;
+			int oldCol = col;
 			this.row=row;
 			this.col=col;
-			model.set(row, col, spriteChar);			
+			model.set(row, col, spriteChar);		
+			SpriteService.getInstance().replaceSprite(this, row, col, oldRow, oldCol);
 		}
 	}
 	public int getCol() {

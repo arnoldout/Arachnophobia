@@ -82,7 +82,7 @@ public class GameController {
 	private Queue<Moveable> addFeature(SpriteType s, char feature, char replace) {
 		int counter = 0;
 		Queue<Moveable> sprites = new LinkedList<Moveable>();
-		while (counter < 20) {
+		while (counter < 10) {
 
 			int row = (int) (model.getMaze().length * Math.random());
 			int col = (int) (model.getMaze()[0].length * Math.random());
@@ -91,7 +91,7 @@ public class GameController {
 				counter++;
 				String uniqueID = UUID.randomUUID().toString();
 				Moveable m = s.getNewInstance(uniqueID,model, row, col, true);
-				spriteService.addSprite(m);
+				spriteService.addSprite(m, row, col);
 				sprites.add(m);
 				//this creates the spider and gives it to the scheduler, every 2 seconds it calls the spiders run method.
 			}
@@ -103,7 +103,7 @@ public class GameController {
 	public void placePlayer(int row, int col) {
 		String uniqueID = UUID.randomUUID().toString();
 		Moveable spartan = SpriteType.spartan.getNewInstance(uniqueID,model, row, col, true);
-		spriteService.addSprite(spartan);
+		spriteService.addSprite(spartan, row, col);
 		spriteService.putFuture(uniqueID,(ScheduledFuture<Double>) god.scheduleAtFixedRate(spartan, 0, 2, TimeUnit.SECONDS));
 	}
 }

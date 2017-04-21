@@ -44,7 +44,7 @@ public class Spartan extends Moveable {
 	// could be an issue with goal nodes
 
 	public Spartan(String id, Maze model, int col, int row, boolean isAlive) {
-		super(id, model, col, row, isAlive, '\u0035', 50000);//sick of him dieing while im testing, he's a titan now. 50k hp.
+		super(id, model, col, row, isAlive, '\u0035', 100);//sick of him dieing while im testing, he's a titan now. 50k hp.
 		nn = NeuralNetworkService.getInstance().getSpartanNeuralNetwork();
 		goalNode = lastGoal = 0;
 		t = new BestFirstCharSearch(this.getMaze());
@@ -214,7 +214,7 @@ public class Spartan extends Moveable {
 			for (int j = bounds[1][0]; j < bounds[1][1]; j++) {
 				if (this.getMaze()[i][j] > '5') {
 					System.out.println("killing a " + this.getMaze()[i][j]);
-					s.killSprite(s.findSprite(j, j, this.getMaze()[i][j]).getId());
+					s.killSprite(s.findSprite(i, j, this.getMaze()[i][j]).getId());
 				}
 			}
 		}
@@ -349,7 +349,6 @@ public class Spartan extends Moveable {
 		int col = this.getCol();
 		int row = this.getRow();
 		swrdNearby = hlpNearby = hbmbNearby = bmbNearby = 0;
-		this.healOrAttackScan();
 		// start @ current pos, x-5 to x+5
 		// y-5 to y+5
 		// Might up this to 10 or 7 at the least.
@@ -394,6 +393,7 @@ public class Spartan extends Moveable {
 				}
 			}
 		}
+		this.healOrAttackScan();
 
 	}
 

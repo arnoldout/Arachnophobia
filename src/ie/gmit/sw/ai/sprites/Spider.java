@@ -18,7 +18,7 @@ public abstract class Spider extends Moveable {
 	private AtomicInteger roundCounter = new AtomicInteger(0);
 
 	public Spider(String id, Maze model, int row, int col, boolean isAlive, char spriteChar) {
-		super(id, model, row, col, isAlive, spriteChar, 10);
+		super(id, model, row, col, isAlive, spriteChar, 1);
 		goalNode = lastGoal = null;
 		path = new LinkedList<Coord>();
 		decisionMaker = new FuzzyChoiceImpl();

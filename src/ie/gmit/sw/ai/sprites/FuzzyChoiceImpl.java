@@ -32,11 +32,10 @@ public class FuzzyChoiceImpl implements Chooseable {
 			double d = euclideanDistance(x, y, pair.getX(), pair.getY());
 			SpriteService ss = SpriteService.getInstance();
 			double spartanEuclid = 0;
-			for (int i = 0; i < ss.spritesSize(); i++) {
-				if (ss.getSprite(i) instanceof Spartan) {
-					spartanEuclid = euclideanDistance(ss.getSprite(i).getCol(), ss.getSprite(i).getRow(), pair.getX(), pair.getY());
-					break;
-				}
+			Moveable spartan = ss.findSpartan();
+			if(spartan!=null)
+			{
+				spartanEuclid = euclideanDistance(spartan.getCol(), spartan.getRow(), pair.getX(), pair.getY());
 			}
 			FunctionBlock functionBlock = fis.getFunctionBlock("BombSystem");
 			functionBlock.setVariable("spartanPosToBomb", spartanEuclid);
@@ -97,10 +96,10 @@ public class FuzzyChoiceImpl implements Chooseable {
 	public DistanceRisk findSpartan()
 	{
 		SpriteService ss = SpriteService.getInstance();
-		for (int i = 0; i < ss.spritesSize(); i++) {
-			if (ss.getSprite(i) instanceof Spartan) {
-				return new DistanceRisk(ss.getSprite(i).getCol(), ss.getSprite(i).getRow());
-			}
+		Moveable m = ss.findSpartan();
+		if(m!=null)
+		{
+			return new DistanceRisk(m.getCol(), m.getRow());
 		}
 		return null;
 	}
