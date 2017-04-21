@@ -44,7 +44,7 @@ public class Spartan extends Moveable {
 	// could be an issue with goal nodes
 
 	public Spartan(String id, Maze model, int col, int row, boolean isAlive) {
-		super(id, model, col, row, isAlive, '\u0035', 100);//sick of him dieing while im testing, he's a titan now. 50k hp.
+		super(id, model, col, row, isAlive, '\u0035', 50);//sick of him dieing while im testing, he's a titan now. 50k hp.
 		nn = NeuralNetworkService.getInstance().getSpartanNeuralNetwork();
 		goalNode = lastGoal = 0;
 		t = new BestFirstCharSearch(this.getMaze());
