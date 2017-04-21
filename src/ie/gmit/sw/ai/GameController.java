@@ -7,7 +7,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import ie.gmit.sw.ai.sprites.FuzzyChoiceImpl;
 import ie.gmit.sw.ai.sprites.Moveable;
+import ie.gmit.sw.ai.sprites.NeuralChoiceImpl;
+import ie.gmit.sw.ai.sprites.Spider;
 import ie.gmit.sw.ai.sprites.SpriteType;
 
 //maybe rename this... because reasons....
@@ -50,9 +53,19 @@ public class GameController {
 		spiders.addAll(addFeature(SpriteType.spider_orange, '\u003B', '0')); 
 		spiders.addAll(addFeature(SpriteType.spider_red, '\u003C', '0')); 
 		spiders.addAll(addFeature(SpriteType.spider_yellow, '\u003D', '0'));
+		int counter = 0;
 		while(!spiders.isEmpty()){
-			Moveable m = spiders.poll();
+			//a third of all spiders should be neural
+			Spider m = (Spider)spiders.poll();
+			if(counter%3==0)
+			{
+ 				m.setDecisionMaker(new NeuralChoiceImpl());
+			}
+			else{
+				m.setDecisionMaker(new FuzzyChoiceImpl());
+			}
 			spriteService.putFuture(m.getId(),(ScheduledFuture<Double>) god.scheduleAtFixedRate(m, 0, 1, TimeUnit.SECONDS));	
+			counter++;
 		}
 		
 	}
@@ -69,7 +82,7 @@ public class GameController {
 	private Queue<Moveable> addFeature(SpriteType s, char feature, char replace) {
 		int counter = 0;
 		Queue<Moveable> sprites = new LinkedList<Moveable>();
-		while (counter < 20) {
+		while (counter < 10) {
 
 			int row = (int) ((model.getMaze().length-2) * Math.random()+1);
 			int col = (int) ((model.getMaze()[0].length-2) * Math.random()+1);
@@ -78,7 +91,7 @@ public class GameController {
 				counter++;
 				String uniqueID = UUID.randomUUID().toString();
 				Moveable m = s.getNewInstance(uniqueID,model, row, col, true);
-				spriteService.addSprite(m);
+				spriteService.addSprite(m, row, col);
 				sprites.add(m);
 				//this creates the spider and gives it to the scheduler, every 2 seconds it calls the spiders run method.
 			}
@@ -90,7 +103,7 @@ public class GameController {
 	public void placePlayer(int row, int col) {
 		String uniqueID = UUID.randomUUID().toString();
 		Moveable spartan = SpriteType.spartan.getNewInstance(uniqueID,model, row, col, true);
-		spriteService.addSprite(spartan);
+		spriteService.addSprite(spartan, row, col);
 		spriteService.putFuture(uniqueID,(ScheduledFuture<Double>) god.scheduleAtFixedRate(spartan, 0, 2, TimeUnit.SECONDS));
 	}
 }
