@@ -64,7 +64,7 @@ public class GameController {
 			else{
 				m.setDecisionMaker(new FuzzyChoiceImpl());
 			}
-			spriteService.putFuture(m.getId(),(ScheduledFuture<Double>) god.scheduleAtFixedRate(m, 0, 1, TimeUnit.SECONDS));	
+			spriteService.putFuture(m.getId(),(ScheduledFuture<Double>) god.scheduleAtFixedRate(m, 0, 2, TimeUnit.SECONDS));	
 			counter++;
 		}
 		

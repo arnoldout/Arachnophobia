@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.swing.SpinnerDateModel;
-import javax.swing.plaf.synth.SynthSeparatorUI;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import ie.gmit.sw.ai.Maze;
 import ie.gmit.sw.ai.NeuralNetworkService;
@@ -45,7 +43,7 @@ public class Spartan extends Moveable {
 	// could be an issue with goal nodes
 
 	public Spartan(String id, Maze model, int col, int row, boolean isAlive) {
-		super(id, model, col, row, isAlive, '\u0035', 50);//sick of him dieing while im testing, he's a titan now. 50k hp.
+		super(id, model, col, row, isAlive, '\u0035', 80);//sick of him dieing while im testing, he's a titan now. 50k hp.
 		nn = NeuralNetworkService.getInstance().getSpartanNeuralNetwork();
 		goalNode = lastGoal = 0;
 		t = new BestFirstCharSearch(this.getMaze());
@@ -256,7 +254,8 @@ public class Spartan extends Moveable {
 
 	// get a sword
 	private void getSword() {
-
+		//max power
+		this.setAttackLevel(new AtomicInteger(100));
 	}
 
 	// get help, provides a map to the exit
@@ -314,21 +313,21 @@ public class Spartan extends Moveable {
 	private int getGoalNode(int indx) {
 		switch (indx) {
 		case 0:
-			if (goalNode != swrdNearby)
-				System.out.println("going for the sword@" + swrdNearby);
+	//		if (goalNode != swrdNearby)
+//				System.out.println("going for the sword@" + swrdNearby);
 			return swrdNearby;
 		case 1:
-			if (goalNode != hlpNearby)
-				System.out.println("going for the help@" + hlpNearby);
+//			if (goalNode != hlpNearby)
+//				System.out.println("going for the help@" + hlpNearby);
 			return hlpNearby;
 		case 2:
-			if (goalNode != bmbNearby)
-				System.out.println("going for the bomb@" + bmbNearby);
+//			if (goalNode != bmbNearby)
+//				System.out.println("going for the bomb@" + bmbNearby);
 			return bmbNearby;
 
 		case 3:
-			if (goalNode != hbmbNearby)
-				System.out.println("going for the hbomb" + hbmbNearby);
+//			if (goalNode != hbmbNearby)
+//				System.out.println("going for the hbomb" + hbmbNearby);
 			return hbmbNearby;
 
 		case 4:
